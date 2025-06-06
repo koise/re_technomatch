@@ -1,7 +1,141 @@
-@font-face {
+@import "../sass/app.scss";
+
+// Core theme variables
+:root {
+  // Base colors for light mode
+  --bg-darker: #f2f2f7;
+  --bg-dark: #fafafa;
+  --bg: #f3f4f6; 
+  --bg-light: #ffffff;
+  --text: #0a101c;
+  --text-color: #0a101c;
+  --text-light: #111827;
+  --text-light-rgb: 17, 24, 39;
+  --text-muted: #4b5563;
+  --secondary-text: #6b7280;
+  --secondary-bg: #fff;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --bg-hover: rgba(0, 0, 0, 0.05);
   
+  // Header specific
+  --header-bg: #ffffff;
+  --header-text: #000103;
+  
+  // Primary color and variants
+  --primary-color: #e53e3e;
+  --primary-color-rgb: 229, 62, 62;
+  --primary-dark: #c53030;
+  --primary-light-color: #fed7d7;
+  
+  // Secondary color
+  --secondary-color: #b83280;
+  --secondary-color-rgb: 184, 50, 128;
+  --secondary-dark: #97266d;
+
+  // Shadows
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+  // Border radius
+  --border-radius-xs: 4px;
+  --border-radius-sm: 6px;
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-full: 9999px;
+  
+  // Fonts
+  --font-sans: "Satoshi", "Verdana", sans-serif;
+  
+  // Z-index scale
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
 }
 
+// Dark mode variables
+.dark {
+  --bg-darker: #0f172a;
+  --bg-dark: #1e293b;
+  --bg: #0a101c;
+  --bg-light: #334155;
+  --text: #ffffff;
+  --text-color: #f3f4f6;
+  --text-light: #f3f4f6;
+  --text-light-rgb: 243, 244, 246;
+  --text-muted: #d1d5db;
+  --secondary-text: #a0aec0;
+  --secondary-bg: #111827;
+  --card-bg: #1e293b;
+  --border-color: #334155;
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  
+  // Header specific
+  --header-bg: #111827;
+  --header-text: #f9fafb;
+  
+  // Primary color and variants
+  --primary-color: #f56565;
+  --primary-color-rgb: 245, 101, 101;
+  --primary-dark: #e53e3e;
+  --primary-light-color: rgba(245, 101, 101, 0.15);
+  
+  // Secondary color
+  --secondary-color: #d53f8c;
+  --secondary-color-rgb: 213, 63, 140;
+  --secondary-dark: #b83280;
+  
+  // Shadows in dark mode
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+}
+
+// System preference support
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --bg-darker: #0f172a;
+    --bg-dark: #1e293b;
+    --bg: #0a101c;
+    --bg-light: #334155;
+    --text: #ffffff;
+    --text-color: #f3f4f6;
+    --text-light: #f3f4f6;
+    --text-light-rgb: 243, 244, 246;
+    --text-muted: #d1d5db;
+    --secondary-text: #a0aec0;
+    --secondary-bg: #111827;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+    --bg-hover: rgba(255, 255, 255, 0.05);
+    
+    // Header specific
+    --header-bg: #111827;
+    --header-text: #f9fafb;
+    
+    // Primary color and variants
+    --primary-color: #f56565;
+    --primary-color-rgb: 245, 101, 101;
+    --primary-dark: #e53e3e;
+    --primary-light-color: rgba(245, 101, 101, 0.15);
+    
+    // Secondary color
+    --secondary-color: #d53f8c;
+    --secondary-color-rgb: 213, 63, 140;
+    --secondary-dark: #b83280;
+    
+    // Shadows in dark mode
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  }
+}
+
+// Base styles
 * {
   margin: 0;
   padding: 0;
@@ -10,12 +144,18 @@
 
 body {
   margin: 0;
-  font-family: "Satoshi", "Verdana", sans-serif;
+  font-family: var(--font-sans);
   background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 main {
   color: var(--text);
   background-color: var(--bg);
   margin: 0 auto;
+}
+
+@font-face {
+  
 }

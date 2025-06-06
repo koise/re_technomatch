@@ -1,6 +1,8 @@
 // src/routes/guestRoutes.jsx
 import React from 'react';
+import Home from '../pages/Home';
 
 export const guestRoutes = [
-  // Guest routes go here
+  { path: '/', element: <Home />, allowedRoles: ['guest'] },
+  // Additional guest routes go here
 ]; 

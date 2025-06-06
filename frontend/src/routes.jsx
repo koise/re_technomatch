@@ -2,11 +2,11 @@
 import React from 'react';
 
 // Layouts
-import GuestLayout from './layout/GuestLayout';
-import AdminLayout from './layout/AdminLayout';
-import StudentLayout from './layout/StudentLayout';
-import ProfessorLayout from './layout/ProfessorLayout';
-import NoLayout from './layout/NoLayout';
+import GuestLayout from './layouts/GuestLayout';
+import AdminLayout from './layouts/AdminLayout';
+import StudentLayout from './layouts/StudentLayout';
+import ProfessorLayout from './layouts/ProfessorLayout';
+import NoLayout from './layouts/NoLayout';
 
 // Pages
 import NotFound from './pages/NotFound';

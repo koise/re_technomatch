@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import AuthTopBar from "../components/AuthTopBar";
 import Spinner from "../components/ui/Spinner";
 
