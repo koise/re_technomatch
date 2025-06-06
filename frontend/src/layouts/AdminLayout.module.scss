@@ -1,0 +1,19 @@
+// resources/js/src/components/Admin/AdminLayout.module.scss
+@import "../../../sass/variables";
+@import "../../../sass/app.scss";
+
+.adminLayout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+}
+
+.layoutContainer {
+    display: flex;
+    flex: 1;
+}
+
+.mainContent {
+    flex: 1;
+}

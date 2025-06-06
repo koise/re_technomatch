@@ -1,0 +1,15 @@
+{
+  "name": "re-capstone",
+  "version": "1.0.0",
+  "description": "React Frontend with SWC + Laravel Backend",
+  "scripts": {
+    "frontend": "cd frontend && npm run dev",
+    "backend": "cd backend && php artisan serve",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "install:all": "npm install && cd backend && composer install && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}

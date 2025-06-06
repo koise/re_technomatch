@@ -1,0 +1,21 @@
+@font-face {
+  
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Satoshi", "Verdana", sans-serif;
+  background-color: var(--bg);
+}
+
+main {
+  color: var(--text);
+  background-color: var(--bg);
+  margin: 0 auto;
+}

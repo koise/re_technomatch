@@ -1,0 +1,142 @@
+
+
+.light {
+    --bg: #f3f4f6;
+    --text: #0a101c;
+    --secondary-bg: #fff;
+    --border: #ccc;
+    --placeholder: #6c757d;
+    --active-menu: rgba(17, 24, 39, 0.1);
+    --secondary-text: #6b7280;
+
+    --bg-darker: #f2f2f7;
+    --bg-dark: #fafafa;
+    --bg-light: #ffffff;
+    --text-light: #111827;
+    --text-muted: #4b5563;
+
+    /* Header specific */
+    --header-bg: #ffffff;
+    --header-text: #000103;
+
+    /* Primary color and variants */
+    --primary-color: rgb(229, 62, 62);
+    --primary-dark: #c53030;
+    --primary-outline: #feb2b2;
+    --primary-light-color: #fed7d7;
+
+    /* Secondary color palette */
+    --secondary-color: #b83280;
+    --secondary-dark: #97266d;
+    --secondary-outline: #fbd5e3;
+
+    /* Success colors */
+    --success-color: #38a169;;
+    --success-dark: #2f855a;
+    --success-outline: #c6f6d5;
+
+    /* Warning colors */
+    --warning-color: #dd6b20;
+    --warning-dark: #c05621;
+    --warning-outline: #feebc8;
+
+    /* Error colors */
+    --error-color: #e53e3e;
+    --error-dark: #c53030;
+    --error-outline: #fed7d7;
+
+    /* Info colors */
+    --info-color: #805ad5;
+    --info-dark: #6b46c1;
+    --info-outline: #e9d8fd;
+
+    /* Neutral colors */
+    --neutral-color: #718096;
+    --neutral-dark: #4a5568;
+    --neutral-outline: #e2e8f0;
+
+    /* Accent colors */
+    --accent-color: #9f7aea;
+    --accent-dark: #805ad5;
+    --accent-outline: #e9d8fd;
+
+    /* Gradient variables */
+    --primary-gradient: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    --secondary-gradient: linear-gradient(45deg, var(--neutral-color), var(--neutral-dark));
+    --success-gradient: linear-gradient(45deg, var(--success-color), var(--success-dark));
+    --danger-gradient: linear-gradient(45deg, var(--error-color), var(--error-dark));
+    --warning-gradient: linear-gradient(45deg, var(--warning-color), var(--warning-dark));
+    --info-gradient: linear-gradient(45deg, var(--info-color), var(--info-dark));
+    --accent-gradient: linear-gradient(45deg, var(--accent-color), var(--accent-dark));
+}
+
+.dark {
+    --bg: #0a101c;
+    --text: #ffffff;
+    --secondary-bg: #111827;
+    --border: #334155;
+    --placeholder: #ccc;
+    --active-menu: rgba(243, 244, 246, 0.1);
+    --border: #2a2e39;
+    --secondary-text: #a0aec0; 
+
+    --bg-darker: #0f172a;
+    --bg-dark: #1e293b;
+    --bg-light: #334155;
+    --text-light: #f3f4f6;
+    --text-muted: #d1d5db;
+
+    /* Header specific */
+    --header-bg: #111827;
+    --header-text: #f9fafb;
+
+    /* Primary color and variants */
+    --primary-color: rgb(245, 101, 101);
+    --primary-dark: #e53e3e;
+    --primary-outline: #fc8181;
+    --primary-light-color: rgba(245, 101, 101, 0.15);
+
+    /* Secondary color palette */
+    --secondary-color: #d53f8c;
+    --secondary-dark: #b83280;
+    --secondary-outline: rgba(213, 63, 140, 0.25);
+
+    /* Success colors */
+    --success-color: #48bb78;
+    --success-dark: #38a169;
+    --success-outline: rgba(72, 187, 120, 0.25);
+
+    /* Warning colors */
+    --warning-color: #ed8936;
+    --warning-dark: #dd6b20;
+    --warning-outline: rgba(237, 137, 54, 0.25);
+
+    /* Error colors */
+    --error-color: #f56565;
+    --error-dark: #e53e3e;
+    --error-outline: rgba(245, 101, 101, 0.25);
+
+    /* Info colors */
+    --info-color: #9f7aea;
+    --info-dark: #805ad5;
+    --info-outline: rgba(159, 122, 234, 0.25);
+
+    /* Neutral colors */
+    --neutral-color: #a0aec0;
+    --neutral-dark: #718096;
+    --neutral-outline: rgba(160, 174, 192, 0.25);
+
+    /* Accent colors */
+    --accent-color: #b794f4;
+    --accent-dark: #9f7aea;
+    --accent-outline: rgba(183, 148, 244, 0.25);
+    
+    /* Gradient variables */
+    --primary-gradient: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    --secondary-gradient: linear-gradient(45deg, var(--neutral-color), var(--neutral-dark));
+    --success-gradient: linear-gradient(45deg, var(--success-color), var(--success-dark));
+    --danger-gradient: linear-gradient(45deg, var(--error-color), var(--error-dark));
+    --warning-gradient: linear-gradient(45deg, var(--warning-color), var(--warning-dark));
+    --info-gradient: linear-gradient(45deg, var(--info-color), var(--info-dark));
+    --accent-gradient: linear-gradient(45deg, var(--accent-color), var(--accent-dark));
+}

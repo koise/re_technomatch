@@ -60,16 +60,6 @@ This will start:
 - Laravel backend at http://localhost:8000
 - React frontend at http://localhost:5173
 
-### API Endpoints
-
-- Test endpoint: `GET /api/hello`
-  - Returns: `{ "message": "Hello from Laravel API!", "status": "success" }`
-
-## Team Collaboration
-
-- Backend developers can focus on the `backend/` directory
-- Frontend developers can focus on the `frontend/` directory
-- API communication happens through the Vite proxy configuration
 
 ## Building for Production
 
