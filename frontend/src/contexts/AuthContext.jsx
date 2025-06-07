@@ -14,18 +14,32 @@ export const AuthProvider = ({ children }) => {
     const [userId, setUserId] = useState(
         localStorage.getItem("user_id") || null
     );
-    const [theme, setTheme] = useState("light"); // Default theme
+    
+    // Get theme from localStorage first, then cookie, then system preference
+    const getInitialTheme = () => {
+        const localTheme = localStorage.getItem("theme");
+        if (localTheme) return localTheme;
+        
+        const cookieTheme = Cookies.get("theme");
+        if (cookieTheme) return cookieTheme;
+        
+        return window.matchMedia('(prefers-color-scheme: dark)').matches 
+            ? 'dark' 
+            : 'light';
+    };
+    
+    const [theme, setTheme] = useState(getInitialTheme());
 
-    // Fetch theme from cookie and auth data on mount
+    // Apply theme when component mounts
     useEffect(() => {
-        // Get theme from cookie (e.g., 'light' or 'dark')
-        const savedTheme = Cookies.get("theme") || "light";
-        setTheme(savedTheme);
-
-        // Apply theme to <body>
+        document.documentElement.classList.remove("light", "dark");
+        document.documentElement.classList.add(theme);
         document.body.classList.remove("light", "dark");
-        document.body.classList.add(savedTheme);
+        document.body.classList.add(theme);
+    }, []);
 
+    // Fetch auth data on mount
+    useEffect(() => {
         // Existing auth logic
         if (token) {
             fetch("/api/user", {
@@ -54,12 +68,56 @@ export const AuthProvider = ({ children }) => {
         }
     }, [token]);
 
-    // Update theme and cookie when theme changes
+    // Update theme and storage when theme changes
     useEffect(() => {
+        // Update document classes
+        document.documentElement.classList.remove("light", "dark");
+        document.documentElement.classList.add(theme);
         document.body.classList.remove("light", "dark");
         document.body.classList.add(theme);
-        Cookies.set("theme", theme, { expires: 365 });
+        
+        // Save to both localStorage and cookie for persistence
+        localStorage.setItem("theme", theme);
+        Cookies.set("theme", theme, { expires: 365, sameSite: 'Lax' });
+        
+        // Dispatch event for components that might not be using the context
+        window.dispatchEvent(new CustomEvent('themechange', { 
+            detail: { theme } 
+        }));
     }, [theme]);
+    
+    // Listen for theme change events from other components
+    useEffect(() => {
+        const handleThemeChange = (event) => {
+            if (event.detail && event.detail.theme) {
+                setTheme(event.detail.theme);
+            }
+        };
+        
+        window.addEventListener('themechange', handleThemeChange);
+        
+        return () => {
+            window.removeEventListener('themechange', handleThemeChange);
+        };
+    }, []);
+    
+    // Listen for system preference changes
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        const handleChange = (e) => {
+            // Only apply if user preference isn't explicitly set in localStorage
+            if (!localStorage.getItem("theme")) {
+                setTheme(e.matches ? 'dark' : 'light');
+            }
+        };
+        
+        mediaQuery.addEventListener('change', handleChange);
+        
+        return () => {
+            mediaQuery.removeEventListener('change', handleChange);
+        };
+    }, []);
 
     const login = (newToken, username, role) => {
         setToken(newToken);
@@ -86,9 +144,21 @@ export const AuthProvider = ({ children }) => {
         });
     };
 
-    // Function to update theme
+    // Enhanced theme update function
     const updateTheme = (newTheme) => {
-        setTheme(newTheme);
+        if (newTheme === 'system') {
+            // If system preference is selected, remove localStorage entry and use system preference
+            localStorage.removeItem("theme");
+            const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            setTheme(isDarkMode ? 'dark' : 'light');
+        } else {
+            setTheme(newTheme);
+        }
+    };
+
+    // Toggle theme function
+    const toggleTheme = () => {
+        setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
     };
 
     return (
@@ -102,6 +172,7 @@ export const AuthProvider = ({ children }) => {
                 userId,
                 theme,
                 setTheme: updateTheme,
+                toggleTheme
             }}
         >
             {children}

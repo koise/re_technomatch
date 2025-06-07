@@ -55,83 +55,90 @@
   --z-30: 30;
   --z-40: 40;
   --z-50: 50;
+  
+  // Transition speeds
+  --transition-fast: 0.15s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
 }
 
 // Dark mode variables
 .dark {
-  --bg-darker: #0f172a;
-  --bg-dark: #1e293b;
-  --bg: #0a101c;
-  --bg-light: #334155;
-  --text: #ffffff;
+  // Base colors - deeper, richer darks with better contrast
+  --bg-darker: #0a0d14;
+  --bg-dark: #121827;
+  --bg: #1a202c;
+  --bg-light: #2d3748;
+  --text: #f8fafc;
   --text-color: #f3f4f6;
   --text-light: #f3f4f6;
   --text-light-rgb: 243, 244, 246;
-  --text-muted: #d1d5db;
-  --secondary-text: #a0aec0;
-  --secondary-bg: #111827;
+  --text-muted: #e2e8f0;
+  --secondary-text: #cbd5e1;
+  --secondary-bg: #171e2e;
   --card-bg: #1e293b;
-  --border-color: #334155;
-  --bg-hover: rgba(255, 255, 255, 0.05);
+  --border-color: #3e4c63;
+  --bg-hover: rgba(255, 255, 255, 0.07);
   
-  // Header specific
-  --header-bg: #111827;
+  // Header specific - deeper colors
+  --header-bg: #0f172a;
   --header-text: #f9fafb;
   
-  // Primary color and variants
+  // Primary color and variants - brighter for better contrast
   --primary-color: #f56565;
   --primary-color-rgb: 245, 101, 101;
   --primary-dark: #e53e3e;
-  --primary-light-color: rgba(245, 101, 101, 0.15);
+  --primary-light-color: rgba(245, 101, 101, 0.2);
   
   // Secondary color
   --secondary-color: #d53f8c;
   --secondary-color-rgb: 213, 63, 140;
   --secondary-dark: #b83280;
   
-  // Shadows in dark mode
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  // Shadows with better visibility in dark mode
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(255, 255, 255, 0.03);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.03);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.6), 0 4px 6px rgba(255, 255, 255, 0.03);
 }
 
 // System preference support
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --bg-darker: #0f172a;
-    --bg-dark: #1e293b;
-    --bg: #0a101c;
-    --bg-light: #334155;
-    --text: #ffffff;
+    // Base colors - deeper, richer darks with better contrast
+    --bg-darker: #0a0d14;
+    --bg-dark: #121827;
+    --bg: #1a202c;
+    --bg-light: #2d3748;
+    --text: #f8fafc;
     --text-color: #f3f4f6;
     --text-light: #f3f4f6;
     --text-light-rgb: 243, 244, 246;
-    --text-muted: #d1d5db;
-    --secondary-text: #a0aec0;
-    --secondary-bg: #111827;
+    --text-muted: #e2e8f0;
+    --secondary-text: #cbd5e1;
+    --secondary-bg: #171e2e;
     --card-bg: #1e293b;
-    --border-color: #334155;
-    --bg-hover: rgba(255, 255, 255, 0.05);
+    --border-color: #3e4c63;
+    --bg-hover: rgba(255, 255, 255, 0.07);
     
-    // Header specific
-    --header-bg: #111827;
+    // Header specific - deeper colors
+    --header-bg: #0f172a;
     --header-text: #f9fafb;
     
-    // Primary color and variants
+    // Primary color and variants - brighter for better contrast
     --primary-color: #f56565;
     --primary-color-rgb: 245, 101, 101;
     --primary-dark: #e53e3e;
-    --primary-light-color: rgba(245, 101, 101, 0.15);
+    --primary-light-color: rgba(245, 101, 101, 0.2);
     
     // Secondary color
     --secondary-color: #d53f8c;
     --secondary-color-rgb: 213, 63, 140;
     --secondary-dark: #b83280;
     
-    // Shadows in dark mode
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+    // Shadows with better visibility in dark mode
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(255, 255, 255, 0.03);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.03);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.6), 0 4px 6px rgba(255, 255, 255, 0.03);
   }
 }
 
@@ -147,13 +154,28 @@ body {
   font-family: var(--font-sans);
   background-color: var(--bg);
   color: var(--text);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color var(--transition-normal) ease, 
+              color var(--transition-normal) ease;
 }
 
 main {
   color: var(--text);
   background-color: var(--bg);
   margin: 0 auto;
+}
+
+// Add styles for focus states that show well in both light and dark mode
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+// Add a class for elements that should have theme transitions
+.theme-transition {
+  transition: background-color var(--transition-normal) ease,
+              color var(--transition-normal) ease,
+              border-color var(--transition-normal) ease,
+              box-shadow var(--transition-normal) ease;
 }
 
 @font-face {

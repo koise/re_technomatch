@@ -1,122 +1,11 @@
-import React, { useState, useEffect, createContext, useContext, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Home.scss';
-import { Link } from "react-router-dom";
 
-// Create Theme Context
-const ThemeContext = createContext();
-
-const ThemeProvider = ({ children }) => {
-  // Check if there's a saved theme preference or use system preference
-  const getInitialTheme = () => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      return savedTheme;
-    }
-    // Check if user prefers dark mode via system settings
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  };
-
-  const [theme, setTheme] = useState('light'); // Default to light as fallback
-
-  // Initialize theme once component mounts (to avoid SSR hydration issues)
-  useEffect(() => {
-    setTheme(getInitialTheme());
-  }, []);
-
-  // Update localStorage and document body class when theme changes
-  useEffect(() => {
-    localStorage.setItem('theme', theme);
-    document.body.className = theme;
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};
-
-// Custom hook to access the theme context
-const useTheme = () => useContext(ThemeContext);
-
-// Theme Toggle Component
-const ThemeToggle = () => {
-  const { theme, toggleTheme } = useTheme();
-  
-  return (
-    <button
-      onClick={toggleTheme}
-      className={`theme-toggle ${theme}`}
-      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-    >
-      <div className="toggle-track">
-        {theme === 'light' ? (
-          <div className="dark-icon">🌙</div>
-        ) : (
-          <div className="light-icon">☀️</div>
-        )}
-        <div className="toggle-thumb"></div>
-      </div>
-    </button>
-  );
-};
-
-// New Header Component
-const Header = () => {
-  const { theme } = useTheme();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Ensure theme is applied to body when header mounts
-  useEffect(() => {
-    document.body.className = theme;
-  }, [theme]);
-  
-  return (
-    <header className={`site-header ${theme} ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-      <div className="header-bg-elements">
-        <div className="bg-element"></div>
-        <div className="bg-element"></div>
-        <div className="bg-element"></div>
-      </div>
-      <div className="header-container">
-        <div className="logo">
-          <a href="#hero">
-            <span className="logo-icon">&#60;/&#62;</span>
-            <span className="logo-text">Techno<span className="logo-accent">Match</span></span>
-          </a>
-        </div>
-        <nav className="main-nav">
-          <ul className="nav-links">
-            <li><a href="#features" className="nav-link"><span className="nav-icon">✨</span>Features</a></li>
-            <li><a href="#battle-modes" className="nav-link"><span className="nav-icon">🎮</span>Battle Modes</a></li>
-            <li><a href="#journey" className="nav-link"><span className="nav-icon">🗺️</span>Journey</a></li>
-            <li><a href="#leaderboard" className="nav-link"><span className="nav-icon">🏆</span>Leaderboard</a></li>
-          </ul>
-        </nav>
-        <div className="header-actions">
-          <ThemeToggle />
-          <div className="auth-buttons">
-            <button className="btn btn-ghost">Log In</button>
-            <button className="btn btn-primary btn-glow">Sign Up</button>
-          </div>
-        </div>
-        <button 
-          className="mobile-menu-toggle"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle mobile menu"
-        >
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
-        </button>
-      </div>
-    </header>
-  );
-};
+// Import components
+import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
+import Header from '../components/Header/Header';
+import Footer from '../components/Footer/Footer';
+import CTASection from '../components/CTASection/CTASection';
 
 const HeroSection = () => {
   const { theme } = useTheme();
@@ -240,39 +129,33 @@ const FeatureCard = ({ icon, emoji, title, description, badge }) => {
   );
 };
 
-const FeaturesSection = ({ isActive }) => {
+const FeaturesSection = () => {
   const { theme } = useTheme();
   const [xpProgress, setXpProgress] = useState(25);
   
   useEffect(() => {
-    if (isActive) {
-      // Animate XP bar from current to 100%
-      const interval = setInterval(() => {
-        setXpProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            return 100;
-          }
-          return prev + 5;
-        });
-      }, 50);
-      return () => clearInterval(interval);
-    } else {
-      setXpProgress(25);
-    }
-  }, [isActive]);
+    // Animate XP bar
+    const interval = setInterval(() => {
+      setXpProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
   
   return (
-    <section id="features" className={`features ${theme} ${isActive ? 'active' : ''} section-full`}>
+    <section id="features" className={`features ${theme} section-full`}>
       <div className="section-header">
         <div className="level-indicator">
           <span className="level">LEVEL 1</span>
-        </div>
-        <h2>Game-Changing Features</h2>
-        <div className="xp-container">
           <div className="xp-bar"><div className="xp-progress" style={{ width: `${xpProgress}%` }}></div></div>
           <span className="xp-text">{xpProgress}/100 XP</span>
         </div>
+        <h2>Game-Changing Features</h2>
       </div>
       
       <div className="feature-cards">
@@ -317,9 +200,15 @@ const ModeCard = ({ type, icon, title, children }) => {
   
   return (
     <div className={`mode-card ${type} ${theme}`}>
+      <div className="tech-border top-left"></div>
+      <div className="tech-border top-right"></div>
+      <div className="tech-border bottom-left"></div>
+      <div className="tech-border bottom-right"></div>
+      <div className="energy-dot top-right"></div>
       <div className="mode-header">
         <div className="mode-icon">
           <span className="mode-emoji">{icon}</span>
+          <div className="icon-pulse"></div>
         </div>
         <h3>{title}</h3>
         {children[0]}
@@ -328,43 +217,49 @@ const ModeCard = ({ type, icon, title, children }) => {
         {children.slice(1, -1)}
       </div>
       {children[children.length-1]}
+      <div className="card-border"></div>
+      <div className="energy-dot bottom-left"></div>
+      <div className="circuit-decoration"></div>
     </div>
   );
 };
 
-const GameModesSection = ({ isActive }) => {
+const GameModesSection = () => {
   const { theme } = useTheme();
   const [xpProgress, setXpProgress] = useState(65);
   
   useEffect(() => {
-    if (isActive) {
-      // Animate XP bar from current to 100%
-      const interval = setInterval(() => {
-        setXpProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            return 100;
-          }
-          return prev + 3;
-        });
-      }, 50);
-      return () => clearInterval(interval);
-    } else {
-      setXpProgress(65);
-    }
-  }, [isActive]);
+    // Animate XP bar
+    const interval = setInterval(() => {
+      setXpProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 3;
+      });
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
   
   return (
-    <section id="battle-modes" className={`game-modes ${theme} ${isActive ? 'active' : ''} section-full`}>
+    <section id="battle-modes" className={`game-modes ${theme} section-full`}>
+      <div className="cyber-grid">
+        <div className="grid-line horizontal"></div>
+        <div className="grid-line horizontal"></div>
+        <div className="grid-line horizontal"></div>
+        <div className="grid-line vertical"></div>
+        <div className="grid-line vertical"></div>
+        <div className="grid-line vertical"></div>
+      </div>
+      
       <div className="section-header">
         <div className="level-indicator">
           <span className="level">LEVEL 2</span>
-        </div>
-        <h2>Choose Your Battle Mode</h2>
-        <div className="xp-container">
           <div className="xp-bar"><div className="xp-progress" style={{ width: `${xpProgress}%` }}></div></div>
           <span className="xp-text">{xpProgress}/100 XP</span>
         </div>
+        <h2>Choose Your Battle Mode</h2>
         <p className="section-desc">Master your skills through different competitive challenges</p>
       </div>
 
@@ -442,30 +337,26 @@ const GameModesSection = ({ isActive }) => {
   );
 };
 
-const JourneySection = ({ isActive }) => {
+const JourneySection = () => {
   const { theme } = useTheme();
   const [xpProgress, setXpProgress] = useState(75);
   
   useEffect(() => {
-    if (isActive) {
-      // Animate XP bar from current to 100%
-      const interval = setInterval(() => {
-        setXpProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            return 100;
-          }
-          return prev + 2;
-        });
-      }, 50);
-      return () => clearInterval(interval);
-    } else {
-      setXpProgress(75);
-    }
-  }, [isActive]);
+    // Animate XP bar
+    const interval = setInterval(() => {
+      setXpProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
   
   return (
-    <section id="journey" className={`journey-section ${theme} ${isActive ? 'active' : ''} section-full`}>
+    <section id="journey" className={`journey-section ${theme} section-full`}>
       <div className="section-header">
         <div className="level-indicator">
           <span className="level">LEVEL 3</span>
@@ -548,7 +439,6 @@ const JourneySection = ({ isActive }) => {
   );
 };
 
-// Leaderboard Section with mock data
 const LeaderboardItem = ({ rank, username, avatar, points, tier, isCurrentUser, isOnline }) => {
   const { theme } = useTheme();
   
@@ -574,7 +464,7 @@ const LeaderboardItem = ({ rank, username, avatar, points, tier, isCurrentUser, 
   );
 }
 
-const LeaderboardSection = ({ isActive }) => {
+const LeaderboardSection = () => {
   const { theme } = useTheme();
   const [xpProgress, setXpProgress] = useState(50);
   
@@ -588,34 +478,28 @@ const LeaderboardSection = ({ isActive }) => {
   ];
   
   useEffect(() => {
-    if (isActive) {
-      // Animate XP bar from current to 100%
-      const interval = setInterval(() => {
-        setXpProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            return 100;
-          }
-          return prev + 4;
-        });
-      }, 50);
-      return () => clearInterval(interval);
-    } else {
-      setXpProgress(50);
-    }
-  }, [isActive]);
+    // Animate XP bar
+    const interval = setInterval(() => {
+      setXpProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 4;
+      });
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
   
   return (
-    <section id="leaderboard" className={`leaderboard-section ${theme} ${isActive ? 'active' : ''} section-full`}>
+    <section id="leaderboard" className={`leaderboard-section ${theme} section-full`}>
       <div className="section-header">
         <div className="level-indicator">
           <span className="level">LEVEL 4</span>
-        </div>
-        <h2>Top Technocrats</h2>
-        <div className="xp-container">
           <div className="xp-bar"><div className="xp-progress" style={{ width: `${xpProgress}%` }}></div></div>
           <span className="xp-text">{xpProgress}/100 XP</span>
         </div>
+        <h2>Top Technocrats</h2>
         <p className="section-desc">Our highest-ranked coders this season</p>
       </div>
 
@@ -694,106 +578,8 @@ const GoUpButton = () => {
   );
 };
 
-const CTASection = () => {
-  const { theme } = useTheme();
-  
-  return (
-    <section className={`cta ${theme}`}>
-      <div className="circuit-element"></div>
-      <div className="circuit-element"></div>
-      <div className="cta-content">
-        <h2>Ready to Level Up Your Coding Skills?</h2>
-        <p>Join thousands of students in competitive programming battles</p>
-        <div className="cta-badges">
-          <div className="achievement-badge">
-            <span className="badge-icon">⚡</span>
-            <span>50K+ Battles</span>
-          </div>
-          <div className="achievement-badge">
-            <span className="badge-icon">🏆</span>
-            <span>500+ Challenges</span>
-          </div>
-        </div>
-        <button className="btn btn-cta pulse-animation">Start Your Journey</button>
-      </div>
-      <div className="cta-backdrop">
-        <div className="backdrop-circle"></div>
-        <div className="backdrop-circle"></div>
-      </div>
-    </section>
-  );
-};
-
-// New Footer Component
-const Footer = () => {
-  const { theme } = useTheme();
-  
-  return (
-    <footer className={`site-footer ${theme}`}>
-      <div className="footer-content">
-        <div className="footer-section">
-          <h3 className="footer-title">TechnoMatch</h3>
-          <p className="footer-description">
-            The ultimate competitive programming platform for students.
-            Level up your coding skills through structured competition.
-          </p>
-          <div className="footer-social">
-            <a href="#" aria-label="GitHub"><span className="social-icon">GitHub</span></a>
-            <a href="#" aria-label="Twitter"><span className="social-icon">Twitter</span></a>
-            <a href="#" aria-label="Discord"><span className="social-icon">Discord</span></a>
-          </div>
-        </div>
-        
-        <div className="footer-section">
-          <h3 className="footer-title">Platform</h3>
-          <ul className="footer-links">
-            <li><a href="#">Features</a></li>
-            <li><a href="#">Battle Modes</a></li>
-            <li><a href="#">Challenges</a></li>
-            <li><a href="#">Leaderboard</a></li>
-          </ul>
-        </div>
-        
-        <div className="footer-section">
-          <h3 className="footer-title">Resources</h3>
-          <ul className="footer-links">
-            <li><a href="#">Documentation</a></li>
-            <li><a href="#">Learning Path</a></li>
-            <li><a href="#">API</a></li>
-            <li><a href="#">Blog</a></li>
-          </ul>
-        </div>
-        
-        <div className="footer-section">
-          <h3 className="footer-title">Company</h3>
-          <ul className="footer-links">
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Careers</a></li>
-            <li><a href="#">Contact</a></li>
-            <li><a href="#">Legal</a></li>
-          </ul>
-        </div>
-      </div>
-      
-      <div className="footer-bottom">
-        <p className="copyright">© {new Date().getFullYear()} TechnoMatch. All rights reserved.</p>
-        <div className="footer-legal">
-          <a href="#">Privacy Policy</a>
-          <span className="legal-separator">|</span>
-          <a href="#">Terms of Service</a>
-        </div>
-      </div>
-    </footer>
-  );
-};
-
 const Home = () => {
-  const [activeSection, setActiveSection] = useState('hero');
-  const [isScrolling, setIsScrolling] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const scrolling = useRef(false);
-  const sectionRefs = useRef({});
-  const sections = ['hero', 'features', 'battle-modes', 'journey', 'leaderboard'];
   
   // Handle loading effect
   useEffect(() => {
@@ -803,117 +589,6 @@ const Home = () => {
     }, 1500);
     return () => clearTimeout(timer);
   }, []);
-  
-  // Sound effect references
-  const [soundEnabled, setSoundEnabled] = useState(false);
-  const buttonClickSound = useRef(null);
-  const sectionChangeSound = useRef(null);
-  const hoverSound = useRef(null);
-
-  useEffect(() => {
-    // Initialize audio elements
-    if (typeof window !== 'undefined') {
-      buttonClickSound.current = new Audio('/sounds/button-click.mp3');
-      sectionChangeSound.current = new Audio('/sounds/section-change.mp3');
-      hoverSound.current = new Audio('/sounds/hover.mp3');
-      
-      // Set volume levels
-      buttonClickSound.current.volume = 0.3;
-      sectionChangeSound.current.volume = 0.2;
-      hoverSound.current.volume = 0.1;
-    }
-  }, []);
-  
-  // Sound effect player
-  const playSound = (sound) => {
-    if (soundEnabled && sound?.current) {
-      sound.current.currentTime = 0;
-      sound.current.play().catch(e => console.log("Audio play error:", e));
-    }
-  };
-
-  // Toggle sound effects
-  const toggleSound = () => {
-    setSoundEnabled(!soundEnabled);
-    playSound(buttonClickSound);
-  };
-  
-  // Initialize refs for each section
-  useEffect(() => {
-    sections.forEach(section => {
-      sectionRefs.current[section] = document.getElementById(section);
-    });
-  }, []);
-  
-  // Handle scroll events to update active section
-  const handleScroll = () => {
-    if (scrolling.current) return;
-    
-    let newActiveSection = activeSection;
-    let maxVisibility = 0;
-    
-    sections.forEach(section => {
-      const element = sectionRefs.current[section];
-      if (element) {
-        const rect = element.getBoundingClientRect();
-        const height = window.innerHeight;
-        
-        // Calculate how much of the section is visible
-        const visiblePx = Math.min(rect.bottom, height) - Math.max(rect.top, 0);
-        const visiblePercent = visiblePx / element.offsetHeight;
-        
-        if (visiblePercent > maxVisibility) {
-          maxVisibility = visiblePercent;
-          newActiveSection = section;
-        }
-      }
-    });
-    
-    setActiveSection(newActiveSection);
-  };
-  
-  // Handle wheel events for section scrolling
-  const handleWheel = (e) => {
-    e.preventDefault();
-    
-    // Prevent rapid scroll triggers
-    if (isScrolling) return;
-    setIsScrolling(true);
-    
-    // Determine scroll direction
-    const direction = e.deltaY > 0 ? 'down' : 'up';
-    
-    // Get all section elements
-    const sections = document.querySelectorAll('section[id]');
-    let currentSectionIndex = -1;
-    
-    // Find the current section in view
-    sections.forEach((section, index) => {
-      const rect = section.getBoundingClientRect();
-      const isInView = rect.top < window.innerHeight / 2 && rect.bottom > window.innerHeight / 2;
-      if (isInView) currentSectionIndex = index;
-    });
-    
-    // Calculate the next section index
-    let nextSectionIndex = direction === 'down' 
-      ? Math.min(currentSectionIndex + 1, sections.length - 1)
-      : Math.max(currentSectionIndex - 1, 0);
-      
-    // Scroll to next section if different from current
-    if (nextSectionIndex !== currentSectionIndex && nextSectionIndex >= 0) {
-      const nextSectionId = sections[nextSectionIndex].id;
-      document.getElementById(nextSectionId).scrollIntoView({ 
-        behavior: 'smooth'
-      });
-      
-      setActiveSection(nextSectionId);
-    }
-    
-    // Reset scroll lock after animation completes
-    setTimeout(() => {
-      setIsScrolling(false);
-    }, 1000);
-  };
 
   return (
     <ThemeProvider>
@@ -950,12 +625,11 @@ const Home = () => {
         
         <main className="main-content">
           <HeroSection />
-          <FeaturesSection isActive={activeSection === 'features'} />
-          <GameModesSection isActive={activeSection === 'battle-modes'} />
-          <JourneySection isActive={activeSection === 'journey'} />
-          <LeaderboardSection isActive={activeSection === 'leaderboard'} />
+          <FeaturesSection />
+          <GameModesSection />
+          <JourneySection />
+          <LeaderboardSection />
           <CTASection />
-          <Footer />
         </main>
         
         {/* Floating Particles */}
@@ -982,36 +656,13 @@ const Home = () => {
         
         <GoUpButton />
         
-        {/* Game UI Navigation Dots */}
-        <div className="section-navigator">
-          {sections.map((section, index) => (
-            <a 
-              key={index} 
-              href={`#${section}`} 
-              className={`nav-dot ${activeSection === section ? 'active' : ''}`}
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById(section).scrollIntoView({ behavior: 'smooth' });
-                setActiveSection(section);
-              }}
-              data-section={section}
-            >
-              <span className="dot-label">{section.replace('-', ' ')}</span>
-            </a>
-          ))}
-        </div>
-        
         {/* Tech Status Indicator */}
         <div className="tech-status">
           <div className="status-dot online"></div>
           <span className="status-text">SYSTEM ONLINE</span>
         </div>
         
-        {/* Tech Coordinates Display */}
-        <div className="tech-coordinates">
-          <div className="coordinate x">X: 1420.8</div>
-          <div className="coordinate y">Y: 793.2</div>
-        </div>
+        <Footer />
       </div>
     </ThemeProvider>
   );
