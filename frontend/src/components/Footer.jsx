@@ -16,9 +16,9 @@ const Footer = () => {
         <div className="footer-links">
           <div className="link-group">
             <h4>Platform</h4>
-            <Link to="/features">Features</Link>
-            <Link to="/how-it-works">How It Works</Link>
-            <Link to="/pricing">Pricing</Link>
+            <a href="#features">Features</a>
+            <a href="#battle-modes">Battles</a>
+            <a href="#leaderboard">Leaderboard</a>
           </div>
           
           <div className="link-group">

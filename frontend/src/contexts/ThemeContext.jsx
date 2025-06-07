@@ -3,10 +3,26 @@ import React, { useState, useEffect, createContext, useContext } from 'react';
 // Create Theme Context
 const ThemeContext = createContext();
 
+// Cookie helper functions 
+// MAKE IT BASE ON SERVER TIME
+const setCookie = (name, value, days = 365) => {
+  const date = new Date();
+  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+  const expires = `expires=${date.toUTCString()}`;
+  document.cookie = `${name}=${value};${expires};path=/;SameSite=Strict`;
+};
+
+const getCookie = (name) => {
+  const cookieValue = document.cookie
+    .split('; ')
+    .find(row => row.startsWith(`${name}=`));
+  return cookieValue ? cookieValue.split('=')[1] : null;
+};
+
 export const ThemeProvider = ({ children }) => {
-  // Check if there's a saved theme preference or use system preference
+  // Check if there's a saved theme preference in cookies or use system preference
   const getInitialTheme = () => {
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = getCookie('theme');
     if (savedTheme) {
       return savedTheme;
     }
@@ -21,10 +37,12 @@ export const ThemeProvider = ({ children }) => {
     setTheme(getInitialTheme());
   }, []);
 
-  // Update localStorage and document body class when theme changes
+  // Update cookie and document attributes when theme changes
   useEffect(() => {
-    localStorage.setItem('theme', theme);
-    document.body.className = theme;
+    if (theme) {
+      setCookie('theme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+    }
   }, [theme]);
 
   const toggleTheme = () => {

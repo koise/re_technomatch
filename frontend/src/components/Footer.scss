@@ -1,9 +1,10 @@
 .site-footer {
-  background-color: var(--bg-darker);
-  color: var(--text-light);
+  background-color: var(--bg-secondary);
+  color: var(--text);
   padding: 4rem 2rem 2rem;
   position: relative;
   overflow: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
   
   &::before {
     content: '';
@@ -12,7 +13,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color), var(--info-color), var(--primary-color));
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color), var(--accent-color), var(--primary-color));
     background-size: 400% 100%;
     animation: gradient-shift 8s ease infinite;
   }
@@ -45,7 +46,7 @@
     
     .logo-tagline {
       font-size: 0.9rem;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       font-style: italic;
     }
   }
@@ -67,7 +68,7 @@
         margin-bottom: 1.25rem;
         position: relative;
         display: inline-block;
-        color: var(--text-light);
+        color: var(--text);
         
         &::after {
           content: '';
@@ -83,7 +84,7 @@
       a {
         display: block;
         text-decoration: none;
-        color: var(--text-muted);
+        color: var(--text-secondary);
         margin-bottom: 0.75rem;
         transition: color 0.2s ease, transform 0.2s ease;
         position: relative;
@@ -119,7 +120,7 @@
       display: flex;
       align-items: center;
       text-decoration: none;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       transition: color 0.2s ease, transform 0.2s ease;
       
       &:hover {
@@ -133,7 +134,7 @@
     max-width: 1200px;
     margin: 3rem auto 0;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     
@@ -145,7 +146,7 @@
     
     .copyright {
       font-size: 0.875rem;
-      color: var(--text-muted);
+      color: var(--text-secondary);
     }
     
     .footer-legal {
@@ -155,7 +156,7 @@
       a {
         font-size: 0.875rem;
         text-decoration: none;
-        color: var(--text-muted);
+        color: var(--text-secondary);
         transition: color 0.2s ease;
         
         &:hover {
@@ -164,6 +165,11 @@
       }
     }
   }
+}
+
+/* Define dark mode specifics for the footer to ensure proper variable usage */
+html.dark .site-footer {
+  background-color: var(--dark-bg);
 }
 
 @keyframes gradient-shift {

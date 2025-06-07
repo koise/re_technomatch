@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext.jsx';
 import GuestNavBar from '../components/GuestNavBar';
 import Footer from '../components/Footer';
-import LoginSidebar from '../components/LoginSidebar';
 import axios from 'axios'; // Import axios 
-import { motion } from 'framer-motion'; // Import motion from framer-motion
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faLaptopCode,
@@ -34,9 +32,7 @@ import {
   faPuzzlePiece,
   faGem,
   faPlus,
-  faChevronLeft,
-  faSkull,
-  faDatabase
+  faChevronLeft
 } from '@fortawesome/free-solid-svg-icons';
 import './Home.scss';
   
@@ -170,57 +166,17 @@ const mockData = {
   ]
 };
 
-// Animation variants
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.6 } }
-};
-
-const slideUp = {
-  hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-};
-
-const itemVariant = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-};
-
 const LoadingScreen = () => {
   return (
-    <motion.div 
-      className="loading-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div className="loading-overlay">
       <div className="loading-content">
-        <motion.div 
-          className="loading-logo"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          TECHNO<span>MATCH</span>
-        </motion.div>
+        <div className="loading-logo">TECHNO<span>MATCH</span></div>
         <div className="loading-bar">
           <div className="loading-progress"></div>
         </div>
         <div className="loading-text">INITIALIZING SYSTEM</div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -283,62 +239,34 @@ const HeroSection = () => {
       </div>
       
       <div className="hero-container">
-        <motion.div 
-          className="hero-content"
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-        >
-          <motion.div className="hero-badge" variants={itemVariant}>
+        <div className="hero-content">
+          <div className="hero-badge">
             <span className="badge-text">&#60;CODE. COMPETE. CONQUER.&#62;</span>
-          </motion.div>
-          <motion.h1 
-            className="glitch-effect" 
-            data-text="TechnoMatch"
-            variants={itemVariant}
-          >
-            TechnoMatch
-          </motion.h1>
-          <motion.p className="tagline" variants={itemVariant}>
-            Level up your programming skills through <span className="highlight">competitive coding battles</span>
-          </motion.p>
+          </div>
+          <h1 className="glitch-effect" data-text="TechnoMatch">TechnoMatch</h1>
+          <p className="tagline">Level up your programming skills through <span className="highlight">competitive coding battles</span></p>
           
-          <motion.div 
-            className="hero-button-center" 
-            style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}
-            variants={itemVariant}
-          >
-            <motion.button 
+          <div className="hero-button-center" style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+            <button 
               className={`btn btn-primary btn-lg ${animateButton ? 'super-pulse' : 'pulse-animation'}`}
               onMouseEnter={handleButtonHover}
               onMouseLeave={handleButtonLeave}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               <span className="btn-icon">
                 <FontAwesomeIcon icon={faGamepad} />
               </span>
               Enter The Arena
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
           
-          <motion.div 
-            className="power-indicator" 
-            style={{ margin: '1.5rem auto', maxWidth: '250px' }}
-            variants={itemVariant}
-          >
+          <div className="power-indicator" style={{ margin: '1.5rem auto', maxWidth: '250px' }}>
             <div className="power-text">Battle Readiness</div>
             <div className="power-bar">
-              <motion.div 
-                className="power-progress" 
-                initial={{ width: "0%" }}
-                animate={{ width: "65%" }}
-                transition={{ duration: 1.5, delay: 0.5 }}
-              ></motion.div>
+              <div className="power-progress" style={{width: '65%'}}></div>
             </div>
-          </motion.div>
+          </div>
           
-          <motion.div className="hero-stats" variants={itemVariant}>
+          <div className="hero-stats">
             <div className="stat-item">
               <span className="stat-value">{stats.activePlayers || '---'}</span>
               <span className="stat-label">Active Students</span>
@@ -353,15 +281,10 @@ const HeroSection = () => {
               <span className="stat-value">{stats.battles || '---'}</span>
               <span className="stat-label">Competitions</span>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
         
-        <motion.div 
-          className="hero-image"
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
+        <div className="hero-image">
           <div className="code-block">
             <div className="code-header">
               <div className="code-dots">
@@ -412,20 +335,15 @@ const HeroSection = () => {
               </code></pre>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
       
-      <motion.div 
-        className="scroll-indicator"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-      >
+      <div className="scroll-indicator">
         <span>Scroll to enter</span>
         <div className="scroll-arrow">
           <FontAwesomeIcon icon={faArrowDown} />
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };
@@ -495,22 +413,12 @@ const FeaturesSection = () => {
   }
   
   return (
-    <motion.section 
-      id="features" 
-      className="features-section"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={fadeIn}
-    >
-      <motion.div 
-        className="arsenal-header"
-        variants={slideUp}
-      >
+    <section id="features" className="features-section">
+      <div className="arsenal-header">
         <h2>Battle Arsenal</h2>
         <div className="arsenal-decorative-line"></div>
         <p className="section-subtitle">Discover the powerful tools at your disposal</p>
-      </motion.div>
+      </div>
       
       <div className="arsenal-container">
         <button 
@@ -549,38 +457,9 @@ const FeaturesSection = () => {
                     <span>{Math.floor(Math.random() * 40) + 60}</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
-          
-          {/* Repeated features starting from "Real-time Competitive Coding" */}
-          {features.map(feature => (
-            <div 
-              className={`feature-card ${hoveredCard === `repeat-${feature.id}` ? 'feature-highlight' : ''}`} 
-              key={`repeat-${feature.id}`}
-              onMouseEnter={() => setHoveredCard(`repeat-${feature.id}`)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <div className="feature-glow" style={{ boxShadow: `0 0 25px ${feature.color}40` }}></div>
-              <div className="feature-content">
-                <div className="feature-icon-container">
-                  <div className="feature-icon" style={{ backgroundColor: `${feature.color}20`, color: feature.color }}>
-                    <FontAwesomeIcon icon={feature.icon} />
-                  </div>
-                  <div className="icon-ring" style={{ borderColor: feature.color }}></div>
-                </div>
-                <h3>{feature.title}</h3>
-                <p>{feature.description}</p>
-                <div className="feature-stats">
-                  <div className="stat" style={{ color: feature.color }}>
-                    <FontAwesomeIcon icon={faBolt} />
-                    <span>{Math.floor(Math.random() * 30) + 70}</span>
-                  </div>
-                  <div className="stat" style={{ color: feature.color }}>
-                    <FontAwesomeIcon icon={faShield} />
-                    <span>{Math.floor(Math.random() * 40) + 60}</span>
-                  </div>
-                </div>
+                <button className="equip-button" style={{ backgroundColor: feature.color }}>
+                  Equip
+                </button>
               </div>
             </div>
           ))}
@@ -594,7 +473,7 @@ const FeaturesSection = () => {
           <FontAwesomeIcon icon={faChevronRight} />
         </button>
       </div>
-    </motion.section>
+    </section>
   );
 };
 
@@ -659,21 +538,11 @@ const BattleModesSection = () => {
   }
   
   return (
-    <motion.section 
-      id="battle-modes" 
-      className="battle-modes-section"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={fadeIn}
-    >
-      <motion.div 
-        className="battle-modes-header"
-        variants={slideUp}
-      >
-        <h2>Battle Arenas</h2>
-        <p className="section-subtitle">Choose your battlefield and prove your worth</p>
-      </motion.div>
+    <section id="battle-modes" className="battle-modes-section">
+      <div className="battle-modes-header">
+      <h2>Battle Arenas</h2>
+      <p className="section-subtitle">Choose your battlefield and prove your worth</p>
+      </div>
       
       <div className="battle-modes-grid">
         {battleModes.map(mode => (
@@ -764,170 +633,116 @@ const BattleModesSection = () => {
               </div>
             ))}
           </div>
-    </motion.section>
+    </section>
   );
 };
 
 const LeaderboardSection = () => {
   const [hoveredRow, setHoveredRow] = useState(null);
+  const [showAnimation, setShowAnimation] = useState(false);
   const [highlightRank, setHighlightRank] = useState(1);
   const [leaderboardPlayers, setLeaderboardPlayers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  // Simplified leaderboard data focusing on level and rank
+  // Enhanced leaderboard data with more game-like details
   const mockLeaderboardData = [
     { 
       rank: 1, 
-      username: 'CodingLegend', 
-      fullName: 'Alex Johnson',
-      xp: 28750, 
-      level: 52,
-      badge: 'Technocrat', 
+      name: 'CodingLegend', 
+      score: 28750, 
+      winRate: 89, 
+      badge: 'Grandmaster', 
       avatarColor: '#E91E63',
-      winRate: '94%',
-      matches: 287
+      winStreak: 17,
+      specialty: 'Algorithms',
+      battles: 346,
+      level: 52
     },
     { 
       rank: 2, 
-      username: 'AlgorithmQueen', 
-      fullName: 'Sophia Chen',
-      xp: 26543, 
-      level: 48,
-      badge: 'Master 3', 
+      name: 'AlgorithmQueen', 
+      score: 26543, 
+      winRate: 87, 
+      badge: 'Champion', 
       avatarColor: '#9C27B0',
-      winRate: '91%',
-      matches: 253
+      winStreak: 12,
+      specialty: 'Data Structures',
+      battles: 298,
+      level: 48
     },
     { 
       rank: 3, 
-      username: 'DragonCoder', 
-      fullName: 'Michael Rodriguez',
-      xp: 24981, 
-      level: 45,
-      badge: 'Master 2', 
+      name: 'DragonCoder', 
+      score: 24981, 
+      winRate: 85, 
+      badge: 'Master', 
       avatarColor: '#FF5722',
-      winRate: '89%',
-      matches: 215
+      winStreak: 9,
+      specialty: 'Backend',
+      battles: 312,
+      level: 45
     },
     { 
       rank: 4, 
-      username: 'HackerElite', 
-      fullName: 'Emma Watson',
-      xp: 23542, 
-      level: 43,
-      badge: 'Master 1', 
+      name: 'HackerElite', 
+      score: 23542, 
+      winRate: 83, 
+      badge: 'Legend', 
       avatarColor: '#673AB7',
-      winRate: '87%',
-      matches: 198
+      winStreak: 7,
+      specialty: 'Security',
+      battles: 276,
+      level: 43
     },
     { 
       rank: 5, 
-      username: 'ByteNinja', 
-      fullName: 'David Kim',
-      xp: 21687, 
-      level: 41,
-      badge: 'Elite 3', 
+      name: 'ByteNinja', 
+      score: 21687, 
+      winRate: 81, 
+      badge: 'Expert', 
       avatarColor: '#2196F3',
-      winRate: '86%',
-      matches: 176
+      winStreak: 6,
+      specialty: 'Frontend',
+      battles: 289,
+      level: 41
     },
     { 
       rank: 6, 
-      username: 'CodeWarrior', 
-      fullName: 'Sarah Parker',
-      xp: 19845, 
-      level: 39,
-      badge: 'Elite 2', 
+      name: 'CodeWarrior', 
+      score: 19845, 
+      winRate: 79, 
+      badge: 'Elite', 
       avatarColor: '#4CAF50',
-      winRate: '84%',
-      matches: 165
+      winStreak: 4,
+      specialty: 'Full Stack',
+      battles: 265,
+      level: 39
     },
     { 
       rank: 7, 
-      username: 'SyntaxKing', 
-      fullName: 'James Wilson',
-      xp: 18120, 
-      level: 37,
-      badge: 'Elite 1', 
+      name: 'SyntaxKing', 
+      score: 18120, 
+      winRate: 76, 
+      badge: 'Veteran', 
       avatarColor: '#FFC107',
-      winRate: '82%',
-      matches: 143
-    },
-    { 
-      rank: 8, 
-      username: 'DataDragon', 
-      fullName: 'Olivia Martinez',
-      xp: 16450, 
-      level: 34,
-      badge: 'Apprentice 3', 
-      avatarColor: '#FF9800',
-      winRate: '79%',
-      matches: 138
-    },
-    { 
-      rank: 9, 
-      username: 'BugSlayer', 
-      fullName: 'Daniel Thompson',
-      xp: 14320, 
-      level: 30,
-      badge: 'Apprentice 2', 
-      avatarColor: '#8BC34A',
-      winRate: '76%',
-      matches: 124
-    },
-    { 
-      rank: 10, 
-      username: 'CodeNinja', 
-      fullName: 'Ava Williams',
-      xp: 12800, 
-      level: 27,
-      badge: 'Apprentice 1', 
-      avatarColor: '#03A9F4',
-      winRate: '73%',
-      matches: 110
+      winStreak: 3,
+      specialty: 'Databases',
+      battles: 243,
+      level: 37
     }
   ];
   
-  // Updated badge colors for the new rank system
   const badgeColors = {
-    'Novice 1': '#607D8B',
-    'Novice 2': '#9E9E9E',
-    'Novice 3': '#CDDC39',
-    'Apprentice 1': '#03A9F4',
-    'Apprentice 2': '#8BC34A',
-    'Apprentice 3': '#FF9800',
-    'Elite 1': '#FFC107',
-    'Elite 2': '#4CAF50',
-    'Elite 3': '#2196F3',
-    'Master 1': '#673AB7',
-    'Master 2': '#FF5722',
-    'Master 3': '#9C27B0',
-    'Technocrat': '#E91E63'
-  };
-
-  // Badge styling to reflect rank progression
-  const getBadgeStyle = (badge) => {
-    // Base style
-    const style = {
-      backgroundColor: `${badgeColors[badge]}20`,
-      color: badgeColors[badge]
-    };
-    
-    // Special styling for highest rank
-    if (badge === 'Technocrat') {
-      style.background = 'linear-gradient(45deg, #E91E63, #9C27B0)';
-      style.color = '#fff';
-      style.textShadow = '0 0 5px rgba(0,0,0,0.5)';
-    }
-    
-    return style;
-  };
-
-  const rankIcons = {
-    1: faCrown,
-    2: faMedal,
-    3: faTrophy
+    'Novice': '#78909C',
+    'Skilled': '#8BC34A',
+    'Elite': '#00BCD4',
+    'Expert': '#FFC107',
+    'Veteran': '#9C27B0',
+    'Master': '#FF5722',
+    'Champion': '#E91E63',
+    'Legend': '#673AB7',
+    'Grandmaster': '#F44336'
   };
   
   // Function to fetch leaderboard data from API
@@ -956,7 +771,11 @@ const LeaderboardSection = () => {
   
   // Animation effects and data fetching
   useEffect(() => {
-    // Set up highlight effect that cycles through top ranks
+    // Set up animations
+    setShowAnimation(true);
+    const animationTimer = setTimeout(() => setShowAnimation(false), 2000);
+    
+    // Create highlight effect that cycles through top ranks
     const highlightInterval = setInterval(() => {
       setHighlightRank(prev => (prev % 3) + 1);
     }, 3000);
@@ -965,6 +784,7 @@ const LeaderboardSection = () => {
     fetchLeaderboardData();
     
     return () => {
+      clearTimeout(animationTimer);
       clearInterval(highlightInterval);
     };
   }, []);
@@ -974,6 +794,10 @@ const LeaderboardSection = () => {
     return (
       <section id="leaderboard" className="leaderboard-section">
         <div className="leaderboard-header">
+          <div className="leaderboard-title-container">
+            <FontAwesomeIcon icon={faTrophy} className="leaderboard-icon" />
+            <h2>Hall of Fame</h2>
+          </div>
           <p className="section-subtitle">Loading leaderboard data...</p>
         </div>
       </section>
@@ -985,6 +809,10 @@ const LeaderboardSection = () => {
     return (
       <section id="leaderboard" className="leaderboard-section">
         <div className="leaderboard-header">
+          <div className="leaderboard-title-container">
+            <FontAwesomeIcon icon={faTrophy} className="leaderboard-icon" />
+            <h2>Hall of Fame</h2>
+          </div>
           <p className="section-subtitle">Error loading leaderboard data. Please try again later.</p>
         </div>
       </section>
@@ -992,144 +820,60 @@ const LeaderboardSection = () => {
   }
   
   return (
-    <motion.section 
-      id="leaderboard" 
-      className="leaderboard-section"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={fadeIn}
-    >
-      {/* Enhanced Gaming-Style Header */}
+    <section id="leaderboard" className="leaderboard-section">
       <div className="leaderboard-header">
         <div className="leaderboard-title-container">
-          <div className="leaderboard-icon">
-            <FontAwesomeIcon icon={faTrophy} />
-          </div>
-          <h2>Battle Rankings</h2>
+          <FontAwesomeIcon 
+            icon={faTrophy} 
+            className="leaderboard-icon"
+          />
+          <h2>Hall of Fame</h2>
         </div>
-        <p className="section-subtitle">
-          The most skilled warriors rise to the top. Do you have what it takes to join the elite?
-        </p>
-        
-        {/* Champion Banner - displays current #1 player */}
-        {leaderboardPlayers.length > 0 && (
-          <div className="champion-banner">
-            <div className="banner-title">Current Champion</div>
-            <div className="banner-content">
-              <div className="champion-avatar">
-                {leaderboardPlayers[0].username.charAt(0)}
-              </div>
-              <div className="champion-info">
-                <div className="champion-name">{leaderboardPlayers[0].fullName}</div>
-                <div className="champion-stats">
-                  <span>
-                    <FontAwesomeIcon icon={faStar} />
-                    Lvl {leaderboardPlayers[0].level}
-                  </span>
-                  <span>
-                    <FontAwesomeIcon icon={faShield} />
-                    {leaderboardPlayers[0].badge} Rank
-                  </span>
-                  <span>
-                    <FontAwesomeIcon icon={faGamepad} />
-                    {leaderboardPlayers[0].matches} Matches
-                  </span>
-                  <span>
-                    <FontAwesomeIcon icon={faChartLine} />
-                    {leaderboardPlayers[0].winRate} Win Rate
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <p className="section-subtitle">Legendary coders who have conquered the TechnoMatch arenas</p>
       </div>
-
+        
       {/* Top 3 Podium */}
       <div className="leaderboard-podium">
-        {leaderboardPlayers.slice(0, 3).map((player) => (
-          <motion.div 
+        {leaderboardPlayers.slice(0, 3).map((player, index) => (
+          <div 
             key={player.rank} 
             className={`podium-position position-${player.rank} ${highlightRank === player.rank ? 'highlight' : ''}`}
-            whileHover={{ y: -10, transition: { duration: 0.2 } }}
           >
             <div className="podium-avatar" style={{ backgroundColor: player.avatarColor }}>
-              <span>{player.username.charAt(0)}</span>
+              <span>{player.name.charAt(0)}</span>
               {player.rank === 1 && <FontAwesomeIcon icon={faCrown} className="crown-icon" />}
             </div>
             <div className="podium-info">
-              <div className="podium-fullname">{player.fullName}</div>
-              <div className="podium-username">@{player.username}</div>
-              <div className="podium-level">
-                <span className="level-label">Level</span>
-                <span className="level-value">{player.level}</span>
-              </div>
-              <div className="podium-badge" style={getBadgeStyle(player.badge)}>
+              <div className="podium-name">{player.name}</div>
+              <div className="podium-score">{player.score.toLocaleString()} pts</div>
+              <div className="podium-badge" style={{ color: badgeColors[player.badge] }}>
                 {player.badge}
               </div>
-              <div className="podium-winrate">{player.winRate} Win Rate</div>
             </div>
             <div className="podium-stand">
-              <FontAwesomeIcon icon={rankIcons[player.rank] || faStar} className="rank-icon" />
               <span className="podium-rank">{player.rank}</span>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
         
-      {/* Leaderboard Table with Enhanced Header */}
+      {/* Leaderboard Table */}
       <div className="leaderboard-table-container">
-        <div className="table-section-title">
-          <FontAwesomeIcon icon={faServer} className="title-icon" />
-          <h3>Server Rankings</h3>
-        </div>
-        
-        <motion.div 
-          className="leaderboard-table"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-        >
+        <div className="leaderboard-table">
           <div className="leaderboard-table-header">
-            <div className="header-rank">
-              <FontAwesomeIcon icon={faTrophy} className="header-icon" />
-              <span>Rank</span>
-            </div>
-            <div className="header-player">
-              <FontAwesomeIcon icon={faUser} className="header-icon" />
-              <span>Player</span>
-            </div>
-            <div className="header-level">
-              <FontAwesomeIcon icon={faStar} className="header-icon" />
-              <span>Level</span>
-            </div>
-            <div className="header-xp">
-              <FontAwesomeIcon icon={faShield} className="header-icon" />
-              <span>Rank</span>
-            </div>
-            <div className="header-matches">
-              <FontAwesomeIcon icon={faGamepad} className="header-icon" />
-              <span>Matches</span>
-            </div>
-            <div className="header-winrate">
-              <FontAwesomeIcon icon={faChartLine} className="header-icon" />
-              <span>Win Rate</span>
-            </div>
+            <div className="header-rank">Rank</div>
+            <div className="header-player">Player</div>
+            <div className="header-level">Level</div>
+            <div className="header-battles">Battles</div>
+            <div className="header-score">Score</div>
           </div>
           
           {leaderboardPlayers.map(player => (
-            <motion.div 
+            <div 
               key={player.rank}
               className={`leaderboard-row ${hoveredRow === player.rank ? 'hovered' : ''} ${player.rank <= 3 ? `top-${player.rank}` : ''}`}
               onMouseEnter={() => setHoveredRow(player.rank)}
               onMouseLeave={() => setHoveredRow(null)}
-              variants={itemVariant}
-              whileHover={{ 
-                backgroundColor: 'rgba(var(--primary-rgb), 0.1)',
-                transition: { duration: 0.2 }
-              }}
             >
               <div className="cell-rank">
                 <div className="rank-circle" style={{ 
@@ -1137,78 +881,59 @@ const LeaderboardSection = () => {
                     ? `linear-gradient(135deg, var(--primary-color), ${badgeColors[player.badge]})` 
                     : 'rgba(var(--text-rgb), 0.1)' 
                 }}>
-                  {player.rank <= 3 ? (
-                    <FontAwesomeIcon icon={rankIcons[player.rank] || faStar} />
-                  ) : player.rank}
+                  {player.rank}
                 </div>
               </div>
               
               <div className="cell-player">
-                <div className="player-avatar" style={{ 
-                  backgroundColor: player.avatarColor,
-                  boxShadow: `0 0 10px ${player.avatarColor}80`
-                }}>
-                  {player.username.charAt(0)}
+                <div className="player-avatar" style={{ backgroundColor: player.avatarColor }}>
+                  {player.name.charAt(0)}
                 </div>
                 <div className="player-info">
-                  <div className="player-fullname">{player.fullName}</div>
-                  <div className="player-username">@{player.username}</div>
+                  <div className="player-name">{player.name}</div>
+                  <div className="player-badge" style={{ color: badgeColors[player.badge] }}>
+                    {player.badge}
+                  </div>
                 </div>
               </div>
               
               <div className="cell-level">
-                <div className="level-badge">
-                  <span className="level-value">{player.level}</span>
+                <div className="level-display">
+                  <FontAwesomeIcon icon={faMedal} />
+                  <span>{player.level}</span>
                 </div>
               </div>
               
-              <div className="cell-xp">
-                <div className="xp-value">{player.badge}</div>
-                <div className="xp-label">Rank</div>
-                <div className="xp-bar-container">
-                  <div className="xp-bar" style={{ 
-                    width: `${(player.xp / leaderboardPlayers[0].xp) * 100}%`,
+              <div className="cell-battles">
+                <FontAwesomeIcon icon={faGamepad} />
+                <span>{player.battles}</span>
+                </div>
+                
+              <div className="cell-score">
+                <div className="score-value">{player.score.toLocaleString()}</div>
+                <div className="score-bar">
+                  <div className="score-fill" style={{ 
+                    width: `${(player.score / leaderboardPlayers[0].score) * 100}%`,
                     background: `linear-gradient(90deg, ${player.avatarColor}, ${player.avatarColor}90)`
                   }}></div>
                 </div>
               </div>
-              
-              <div className="cell-matches">
-                <div className="matches-value">{player.matches}</div>
-                <div className="matches-label">Matches</div>
-                <div className="matches-icon">
-                  <FontAwesomeIcon icon={faGamepad} />
-                </div>
-              </div>
-              
-              <div className="cell-winrate">
-                <div className="winrate-value">{player.winRate}</div>
-                <div className="winrate-label">Win Rate</div>
-                <div className="winrate-indicator">
-                  <FontAwesomeIcon icon={faChartLine} />
-                </div>
-              </div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
-      </div>
+        </div>
+        </div>
         
       <div className="leaderboard-footer">
-        <motion.a 
-          href="/leaderboard" 
-          className="join-leaderboard-btn"
-          whileHover={{ scale: 1.05, boxShadow: "0 5px 15px rgba(0,0,0,0.2)" }}
-          whileTap={{ scale: 0.95 }}
-        >
+        <a href="/leaderboard" className="join-leaderboard-btn">
           <FontAwesomeIcon icon={faRocket} />
-          <span>Join the Battle</span>
-        </motion.a>
+          <span>Climb the Ranks</span>
+        </a>
       </div>
-    </motion.section>
+    </section>
   );
 };
 
-const CTASection = ({ onLoginClick }) => {
+const CTASection = () => {
   const [shake, setShake] = useState(false);
   
   const handleButtonHover = () => {
@@ -1217,52 +942,24 @@ const CTASection = ({ onLoginClick }) => {
   };
   
   return (
-    <motion.section 
-      className="cta-section"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.5 }}
-      variants={fadeIn}
-    >
-      <motion.div 
-        className="cta-content"
-        variants={slideUp}
-      >
-        {/* Decorative tech elements */}
-        <div className="tech-circle circle-1"></div>
-        <div className="tech-circle circle-2"></div>
-        <div className="tech-dot dot-1"></div>
-        <div className="tech-dot dot-2"></div>
-        <div className="tech-dot dot-3"></div>
-        
+    <section className="cta-section">
+      <div className="cta-content">
         <h2>Are you ready to accept the challenge?</h2>
         <p>Join the TechnoMatch arena and battle your way to coding greatness</p>
-        <motion.button 
+        <button 
           className={`btn btn-primary btn-large ${shake ? 'shake-animation' : ''}`}
           onMouseEnter={handleButtonHover}
-          onClick={onLoginClick}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
         >
-          <span className="btn-icon">
-            <FontAwesomeIcon icon={faGamepad} />
-          </span>
           Join The Battle
-        </motion.button>
-      </motion.div>
-    </motion.section>
+        </button>
+      </div>
+    </section>
   );
 };
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoginSidebarOpen, setIsLoginSidebarOpen] = useState(false);
   const { theme } = useTheme();
-
-  // Toggle login sidebar
-  const toggleLoginSidebar = () => {
-    setIsLoginSidebarOpen(!isLoginSidebarOpen);
-  };
 
   // Handle loading effect
   useEffect(() => {
@@ -1296,34 +993,19 @@ const Home = () => {
     };
   }, []);
 
-  // Add body class to prevent scrolling when sidebar is open
-  useEffect(() => {
-    if (isLoginSidebarOpen) {
-      document.body.classList.add('sidebar-open');
-    } else {
-      document.body.classList.remove('sidebar-open');
-    }
-  }, [isLoginSidebarOpen]);
-
   return (
     <div className="home-container">
       {isLoading && <LoadingScreen />}
       
-      <GuestNavBar onLoginClick={toggleLoginSidebar} />
-      <LoginSidebar isOpen={isLoginSidebarOpen} onClose={() => setIsLoginSidebarOpen(false)} />
+      <GuestNavBar />
       
-      <motion.main 
-        className="main-content"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
+      <main className="main-content">
         <HeroSection />
         <FeaturesSection />
         <BattleModesSection />
         <LeaderboardSection />
-        <CTASection onLoginClick={toggleLoginSidebar} />
-      </motion.main>
+        <CTASection />
+      </main>
       
       <Footer />
     </div>

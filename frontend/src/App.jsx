@@ -2,27 +2,24 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import RouteGuard from './RouteGuard';
 import { routes } from './routes';
 import './styles/main.scss';
 import Home from './pages/Home';
-import GuestLayout from './layouts/GuestLayout';
 
 const App = () => {
   console.log('App component rendering');
   
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Direct route for home page to bypass potential issues */}
+      <ThemeProvider>
+        <Router>
+          <Routes>
+          {/* Direct route for home page */}
           <Route
             path="/"
-            element={
-              <GuestLayout>
-                <Home />
-              </GuestLayout>
-            }
+            element={<Home />}
           />
           
           {/* Other routes using the RouteGuard */}
@@ -40,7 +37,8 @@ const App = () => {
             </Route>
           ))}
         </Routes>
-      </Router>
+              </Router>
+      </ThemeProvider>
     </AuthProvider>
   );
 };
