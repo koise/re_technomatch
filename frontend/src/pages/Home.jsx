@@ -36,7 +36,12 @@ import {
   faPlus,
   faChevronLeft,
   faSkull,
-  faDatabase
+  faDatabase,
+  faSort,
+  faSortUp,
+  faSortDown,
+  faFilter,
+  faUserCircle
 } from '@fortawesome/free-solid-svg-icons';
 import './Home.scss';
   
@@ -769,15 +774,25 @@ const BattleModesSection = () => {
 };
 
 const LeaderboardSection = () => {
-  const [hoveredRow, setHoveredRow] = useState(null);
-  const [highlightRank, setHighlightRank] = useState(1);
-  const [leaderboardPlayers, setLeaderboardPlayers] = useState([]);
+  const [leaderboardData, setLeaderboardData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
-  // Simplified leaderboard data focusing on level and rank
+  const [sortConfig, setSortConfig] = useState({ key: 'rank', direction: 'asc' });
+  const [filters, setFilters] = useState({
+    rankTier: 'all',
+    minLevel: '',
+    maxLevel: '',
+    country: ''
+  });
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [hoveredRow, setHoveredRow] = useState(null);
+  const [highlightRank, setHighlightRank] = useState(1);
+
+  // Extended mock data for the leaderboard page
   const mockLeaderboardData = [
     { 
+      id: 1,
       rank: 1, 
       username: 'CodingLegend', 
       fullName: 'Alex Johnson',
@@ -785,10 +800,15 @@ const LeaderboardSection = () => {
       level: 52,
       badge: 'Technocrat', 
       avatarColor: '#E91E63',
-      winRate: '94%',
-      matches: 287
+      winRate: '94',
+      matches: 287,
+      progressPercentage: 85,
+      nextRankXP: 30000,
+      country: 'USA',
+      joinDate: '2022-05-12'
     },
     { 
+      id: 2,
       rank: 2, 
       username: 'AlgorithmQueen', 
       fullName: 'Sophia Chen',
@@ -796,10 +816,15 @@ const LeaderboardSection = () => {
       level: 48,
       badge: 'Master 3', 
       avatarColor: '#9C27B0',
-      winRate: '91%',
-      matches: 253
+      winRate: '91',
+      matches: 253,
+      progressPercentage: 78,
+      nextRankXP: 28000,
+      country: 'Canada',
+      joinDate: '2022-06-28'
     },
     { 
+      id: 3,
       rank: 3, 
       username: 'DragonCoder', 
       fullName: 'Michael Rodriguez',
@@ -807,10 +832,15 @@ const LeaderboardSection = () => {
       level: 45,
       badge: 'Master 2', 
       avatarColor: '#FF5722',
-      winRate: '89%',
-      matches: 215
+      winRate: '89',
+      matches: 215,
+      progressPercentage: 72,
+      nextRankXP: 26000,
+      country: 'Mexico',
+      joinDate: '2022-07-15'
     },
     { 
+      id: 4,
       rank: 4, 
       username: 'HackerElite', 
       fullName: 'Emma Watson',
@@ -818,10 +848,15 @@ const LeaderboardSection = () => {
       level: 43,
       badge: 'Master 1', 
       avatarColor: '#673AB7',
-      winRate: '87%',
-      matches: 198
+      winRate: '87',
+      matches: 198,
+      progressPercentage: 65,
+      nextRankXP: 25000,
+      country: 'UK',
+      joinDate: '2022-08-03'
     },
     { 
+      id: 5,
       rank: 5, 
       username: 'ByteNinja', 
       fullName: 'David Kim',
@@ -829,10 +864,15 @@ const LeaderboardSection = () => {
       level: 41,
       badge: 'Elite 3', 
       avatarColor: '#2196F3',
-      winRate: '86%',
-      matches: 176
+      winRate: '86',
+      matches: 176,
+      progressPercentage: 60,
+      nextRankXP: 23000,
+      country: 'South Korea',
+      joinDate: '2022-08-20'
     },
     { 
+      id: 6,
       rank: 6, 
       username: 'CodeWarrior', 
       fullName: 'Sarah Parker',
@@ -840,10 +880,15 @@ const LeaderboardSection = () => {
       level: 39,
       badge: 'Elite 2', 
       avatarColor: '#4CAF50',
-      winRate: '84%',
-      matches: 165
+      winRate: '84',
+      matches: 165,
+      progressPercentage: 55,
+      nextRankXP: 21000,
+      country: 'Australia',
+      joinDate: '2022-09-05'
     },
     { 
+      id: 7,
       rank: 7, 
       username: 'SyntaxKing', 
       fullName: 'James Wilson',
@@ -851,10 +896,15 @@ const LeaderboardSection = () => {
       level: 37,
       badge: 'Elite 1', 
       avatarColor: '#FFC107',
-      winRate: '82%',
-      matches: 143
+      winRate: '82',
+      matches: 143,
+      progressPercentage: 50,
+      nextRankXP: 20000,
+      country: 'Germany',
+      joinDate: '2022-09-18'
     },
     { 
+      id: 8,
       rank: 8, 
       username: 'DataDragon', 
       fullName: 'Olivia Martinez',
@@ -862,10 +912,15 @@ const LeaderboardSection = () => {
       level: 34,
       badge: 'Apprentice 3', 
       avatarColor: '#FF9800',
-      winRate: '79%',
-      matches: 138
+      winRate: '79',
+      matches: 138,
+      progressPercentage: 45,
+      nextRankXP: 18000,
+      country: 'Spain',
+      joinDate: '2022-10-10'
     },
     { 
+      id: 9,
       rank: 9, 
       username: 'BugSlayer', 
       fullName: 'Daniel Thompson',
@@ -873,10 +928,15 @@ const LeaderboardSection = () => {
       level: 30,
       badge: 'Apprentice 2', 
       avatarColor: '#8BC34A',
-      winRate: '76%',
-      matches: 124
+      winRate: '76',
+      matches: 124,
+      progressPercentage: 40,
+      nextRankXP: 16000,
+      country: 'France',
+      joinDate: '2022-11-05'
     },
     { 
+      id: 10,
       rank: 10, 
       username: 'CodeNinja', 
       fullName: 'Ava Williams',
@@ -884,11 +944,15 @@ const LeaderboardSection = () => {
       level: 27,
       badge: 'Apprentice 1', 
       avatarColor: '#03A9F4',
-      winRate: '73%',
-      matches: 110
+      winRate: '73',
+      matches: 110,
+      progressPercentage: 35,
+      nextRankXP: 14000,
+      country: 'Japan',
+      joinDate: '2022-11-25'
     }
   ];
-  
+
   // Updated badge colors for the new rank system
   const badgeColors = {
     'Novice 1': '#607D8B',
@@ -930,31 +994,6 @@ const LeaderboardSection = () => {
     3: faTrophy
   };
   
-  // Function to fetch leaderboard data from API
-  const fetchLeaderboardData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // Uncomment for production use
-      // const response = await axios.get(`${API_BASE_URL}/leaderboard`);
-      // setLeaderboardPlayers(response.data);
-      
-      // Mock data for development
-      setLeaderboardPlayers(mockLeaderboardData);
-      
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching leaderboard data:', err);
-      setError('Failed to fetch leaderboard data');
-      setLoading(false);
-      
-      // Fallback to mock data if API fails
-      setLeaderboardPlayers(mockLeaderboardData);
-    }
-  };
-  
-  // Animation effects and data fetching
   useEffect(() => {
     // Set up highlight effect that cycles through top ranks
     const highlightInterval = setInterval(() => {
@@ -968,29 +1007,131 @@ const LeaderboardSection = () => {
       clearInterval(highlightInterval);
     };
   }, []);
-  
-  // If loading, show loading indicator (optional)
-  if (loading && leaderboardPlayers.length === 0) {
-    return (
-      <section id="leaderboard" className="leaderboard-section">
-        <div className="leaderboard-header">
-          <p className="section-subtitle">Loading leaderboard data...</p>
-        </div>
-      </section>
-    );
-  }
-  
-  // If error and no data, show error message (optional)
-  if (error && leaderboardPlayers.length === 0) {
-    return (
-      <section id="leaderboard" className="leaderboard-section">
-        <div className="leaderboard-header">
-          <p className="section-subtitle">Error loading leaderboard data. Please try again later.</p>
-        </div>
-      </section>
-    );
-  }
-  
+
+  // Apply filters to data whenever filters or data changes
+  useEffect(() => {
+    applyFilters();
+  }, [leaderboardData, filters]);
+
+  const fetchLeaderboardData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Commented out actual API call - uncomment for production
+      /*
+      const response = await axios.get(`${API_BASE_URL}/leaderboard/full`, {
+        params: {
+          // Add query parameters as needed
+          limit: 100
+        }
+      });
+      setLeaderboardData(response.data);
+      setFilteredData(response.data);
+      */
+
+      // Using mock data for development
+      setLeaderboardData(mockLeaderboardData);
+      setFilteredData(mockLeaderboardData);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching full leaderboard data:', err);
+      setError('Failed to load leaderboard data. Please try again later.');
+      setLoading(false);
+    }
+  };
+
+  const requestSort = (key) => {
+    let direction = 'asc';
+    
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    
+    setSortConfig({ key, direction });
+    
+    setFilteredData(prevData => {
+      const sortedData = [...prevData];
+      sortedData.sort((a, b) => {
+        if (a[key] < b[key]) {
+          return direction === 'asc' ? -1 : 1;
+        }
+        if (a[key] > b[key]) {
+          return direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+      return sortedData;
+    });
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return <FontAwesomeIcon icon={faSort} />;
+    return sortConfig.direction === 'asc' 
+      ? <FontAwesomeIcon icon={faSortUp} /> 
+      : <FontAwesomeIcon icon={faSortDown} />;
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const applyFilters = () => {
+    let result = [...leaderboardData];
+
+    // Filter by rank tier
+    if (filters.rankTier !== 'all') {
+      result = result.filter(player => player.badge.includes(filters.rankTier));
+    }
+
+    // Filter by min level
+    if (filters.minLevel) {
+      result = result.filter(player => player.level >= parseInt(filters.minLevel));
+    }
+
+    // Filter by max level
+    if (filters.maxLevel) {
+      result = result.filter(player => player.level <= parseInt(filters.maxLevel));
+    }
+
+    // Filter by country
+    if (filters.country) {
+      result = result.filter(player => 
+        player.country.toLowerCase().includes(filters.country.toLowerCase())
+      );
+    }
+
+    // Apply current sorting
+    result.sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setFilteredData(result);
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      rankTier: 'all',
+      minLevel: '',
+      maxLevel: '',
+      country: ''
+    });
+  };
+
+  const toggleFilterPanel = () => {
+    setIsFilterVisible(!isFilterVisible);
+  };
+
   return (
     <motion.section 
       id="leaderboard" 
@@ -1013,31 +1154,31 @@ const LeaderboardSection = () => {
         </p>
         
         {/* Champion Banner - displays current #1 player */}
-        {leaderboardPlayers.length > 0 && (
+        {leaderboardData.length > 0 && (
           <div className="champion-banner">
             <div className="banner-title">Current Champion</div>
             <div className="banner-content">
               <div className="champion-avatar">
-                {leaderboardPlayers[0].username.charAt(0)}
+                {leaderboardData[0].username.charAt(0)}
               </div>
               <div className="champion-info">
-                <div className="champion-name">{leaderboardPlayers[0].fullName}</div>
+                <div className="champion-name">{leaderboardData[0].fullName}</div>
                 <div className="champion-stats">
                   <span>
                     <FontAwesomeIcon icon={faStar} />
-                    Lvl {leaderboardPlayers[0].level}
+                    Lvl {leaderboardData[0].level}
                   </span>
                   <span>
                     <FontAwesomeIcon icon={faShield} />
-                    {leaderboardPlayers[0].badge} Rank
+                    {leaderboardData[0].badge} Rank
                   </span>
                   <span>
                     <FontAwesomeIcon icon={faGamepad} />
-                    {leaderboardPlayers[0].matches} Matches
+                    {leaderboardData[0].matches} Matches
                   </span>
                   <span>
                     <FontAwesomeIcon icon={faChartLine} />
-                    {leaderboardPlayers[0].winRate} Win Rate
+                    {leaderboardData[0].winRate}% Win Rate
                   </span>
                 </div>
               </div>
@@ -1048,7 +1189,7 @@ const LeaderboardSection = () => {
 
       {/* Top 3 Podium */}
       <div className="leaderboard-podium">
-        {leaderboardPlayers.slice(0, 3).map((player) => (
+        {leaderboardData.slice(0, 3).map((player) => (
           <motion.div 
             key={player.rank} 
             className={`podium-position position-${player.rank} ${highlightRank === player.rank ? 'highlight' : ''}`}
@@ -1068,7 +1209,7 @@ const LeaderboardSection = () => {
               <div className="podium-badge" style={getBadgeStyle(player.badge)}>
                 {player.badge}
               </div>
-              <div className="podium-winrate">{player.winRate} Win Rate</div>
+              <div className="podium-winrate">{player.winRate}% Win Rate</div>
             </div>
             <div className="podium-stand">
               <FontAwesomeIcon icon={rankIcons[player.rank] || faStar} className="rank-icon" />
@@ -1077,7 +1218,125 @@ const LeaderboardSection = () => {
           </motion.div>
         ))}
       </div>
+      
+      {/* Leaderboard Controls */}
+      <div className="leaderboard-controls">
+        <div className="control-stats">
+          <div className="stat-item">
+            <FontAwesomeIcon icon={faGamepad} className="stat-icon" />
+            <span className="stat-label">Total Players</span>
+            <span className="stat-value">{leaderboardData.length}</span>
+          </div>
+          <div className="stat-item">
+            <FontAwesomeIcon icon={faTrophy} className="stat-icon" />
+            <span className="stat-label">Top Player</span>
+            <span className="stat-value">{leaderboardData[0]?.fullName || 'N/A'}</span>
+          </div>
+          <div className="stat-item">
+            <FontAwesomeIcon icon={faStar} className="stat-icon" />
+            <span className="stat-label">Highest Level</span>
+            <span className="stat-value">{Math.max(...leaderboardData.map(p => p.level)) || 'N/A'}</span>
+          </div>
+        </div>
         
+        <div className="control-actions">
+          <button 
+            className={`filter-toggle ${isFilterVisible ? 'active' : ''}`} 
+            onClick={toggleFilterPanel}
+          >
+            <FontAwesomeIcon icon={faFilter} />
+            <span>Filters</span>
+          </button>
+          
+          <div className="sort-controls">
+            <span>Sort by:</span>
+            <button 
+              onClick={() => requestSort('rank')}
+              className={sortConfig.key === 'rank' ? 'active' : ''}
+            >
+              Rank {getSortIcon('rank')}
+            </button>
+            <button 
+              onClick={() => requestSort('level')}
+              className={sortConfig.key === 'level' ? 'active' : ''}
+            >
+              Level {getSortIcon('level')}
+            </button>
+            <button 
+              onClick={() => requestSort('winRate')}
+              className={sortConfig.key === 'winRate' ? 'active' : ''}
+            >
+              Win Rate {getSortIcon('winRate')}
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Filter Panel */}
+      {isFilterVisible && (
+        <div className="filter-panel">
+          <div className="filter-grid">
+            <div className="filter-group">
+              <label>Rank Tier</label>
+              <select 
+                name="rankTier" 
+                value={filters.rankTier}
+                onChange={handleFilterChange}
+              >
+                <option value="all">All Tiers</option>
+                <option value="Technocrat">Technocrat</option>
+                <option value="Master">Master</option>
+                <option value="Elite">Elite</option>
+                <option value="Apprentice">Apprentice</option>
+                <option value="Novice">Novice</option>
+              </select>
+            </div>
+            
+            <div className="filter-group">
+              <label>Min Level</label>
+              <input 
+                type="number" 
+                name="minLevel"
+                value={filters.minLevel}
+                onChange={handleFilterChange}
+                placeholder="Min"
+              />
+            </div>
+            
+            <div className="filter-group">
+              <label>Max Level</label>
+              <input 
+                type="number" 
+                name="maxLevel"
+                value={filters.maxLevel}
+                onChange={handleFilterChange}
+                placeholder="Max"
+              />
+            </div>
+            
+            <div className="filter-group">
+              <label>Country</label>
+              <input 
+                type="text" 
+                name="country"
+                value={filters.country}
+                onChange={handleFilterChange}
+                placeholder="Filter by country"
+              />
+            </div>
+          </div>
+          
+          <div className="filter-actions">
+            <button onClick={applyFilters} className="apply-button">
+              Apply Filters
+            </button>
+            <button onClick={resetFilters} className="reset-button">
+              Reset
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Leaderboard Table with Enhanced Header */}
       <div className="leaderboard-table-container">
         <div className="table-section-title">
@@ -1119,7 +1378,7 @@ const LeaderboardSection = () => {
             </div>
           </div>
           
-          {leaderboardPlayers.map(player => (
+          {filteredData.map(player => (
             <motion.div 
               key={player.rank}
               className={`leaderboard-row ${hoveredRow === player.rank ? 'hovered' : ''} ${player.rank <= 3 ? `top-${player.rank}` : ''}`}
@@ -1167,7 +1426,7 @@ const LeaderboardSection = () => {
                 <div className="xp-label">Rank</div>
                 <div className="xp-bar-container">
                   <div className="xp-bar" style={{ 
-                    width: `${(player.xp / leaderboardPlayers[0].xp) * 100}%`,
+                    width: `${(player.xp / leaderboardData[0].xp) * 100}%`,
                     background: `linear-gradient(90deg, ${player.avatarColor}, ${player.avatarColor}90)`
                   }}></div>
                 </div>
@@ -1182,7 +1441,7 @@ const LeaderboardSection = () => {
               </div>
               
               <div className="cell-winrate">
-                <div className="winrate-value">{player.winRate}</div>
+                <div className="winrate-value">{player.winRate}%</div>
                 <div className="winrate-label">Win Rate</div>
                 <div className="winrate-indicator">
                   <FontAwesomeIcon icon={faChartLine} />

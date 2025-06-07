@@ -10,6 +10,7 @@ import NoLayout from './layouts/NoLayout';
 
 // Pages
 import NotFound from './pages/NotFound';
+import Dashboard from './pages/student/Dashboard';
 
 // Import route configurations
 import { adminRoutes } from './routes/adminRoutes';
@@ -24,6 +25,16 @@ export const routes = [
     element: <NoLayout />,
     children: [
       { path: '*', element: <NotFound /> },
+    ],
+  },
+
+  // Direct Dashboard Access (No Auth Check)
+  {
+    element: <StudentLayout />,
+    children: [
+      { path: '/student-dashboard', element: <Dashboard /> },
+      { path: '/access-dashboard', element: <Dashboard /> },
+      { path: '/direct-dashboard', element: <Dashboard /> },
     ],
   },
 

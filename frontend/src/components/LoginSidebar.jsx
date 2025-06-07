@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faXmark,
@@ -9,12 +9,14 @@ import {
   faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import './LoginSidebar.scss';
 
 // Mock user data for development
 const MOCK_USERS = [
-  { username: 'admin', email: 'admin@example.com', password: 'password123' },
-  { username: 'testuser', email: 'test@example.com', password: 'testpass' }
+  { username: 'admin', email: 'admin@example.com', password: 'password123', role: 'admin' },
+  { username: 'student', email: 'student@example.com', password: 'password123', role: 'student' },
+  { username: 'professor', email: 'professor@example.com', password: 'password123', role: 'professor' }
 ];
 
 const LoginSidebar = ({ isOpen, onClose }) => {
@@ -24,6 +26,8 @@ const LoginSidebar = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [darkMode, setDarkMode] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
   
   // Check for dark mode on mount and when theme changes
   useEffect(() => {
@@ -76,7 +80,7 @@ const LoginSidebar = ({ isOpen, onClose }) => {
               resolve({ 
                 success: true, 
                 data: { 
-                  user: { id: 1, username: user.username, email: user.email },
+                  user: { id: 1, username: user.username, email: user.email, role: user.role },
                   token: 'mock-jwt-token-12345' 
                 } 
               });
@@ -94,32 +98,46 @@ const LoginSidebar = ({ isOpen, onClose }) => {
       
       // Store token and user data
       if (response.success) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        const { token, user } = response.data;
+        login(token, user.username, user.role);
         
         // Close the sidebar
         onClose();
         
-        // Redirect or update UI as needed
-        // window.location.href = '/dashboard';
+        // Redirect based on user role
+        if (user.role === 'student') {
+          navigate('/dashboard');
+          console.log('Redirecting to student dashboard');
+        } else if (user.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else if (user.role === 'professor') {
+          navigate('/professor/dashboard');
+        }
       }
       /* Mock Authentication End */
       
       // Uncomment the following for real API calls
       /*
       // Real API authentication
-      const response = await axios.post('https://api.technomatch.com/auth/login', loginData);
+      const response = await axios.post('/api/login', loginData);
       
       if (response.data.success) {
-        // Store auth token in localStorage or cookies
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        // Store auth token and user data
+        const { token, user } = response.data;
+        login(token, user.username, user.role);
         
         // Close the sidebar
         onClose();
         
-        // Redirect or update UI as needed
-        // window.location.href = '/dashboard';
+        // Redirect based on user role
+        if (user.role === 'student') {
+          navigate('/dashboard');
+          console.log('Redirecting to student dashboard');
+        } else if (user.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else if (user.role === 'professor') {
+          navigate('/professor/dashboard');
+        }
       }
       */
       

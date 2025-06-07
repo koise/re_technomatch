@@ -22,6 +22,11 @@ const RouteGuard = ({ route }) => {
     return element || <Outlet />;
   }
 
+  // Handle student dashboard routing
+  if (currentPath === '/dashboard' && userRole === 'student') {
+    console.log('Student accessing dashboard - granting access');
+  }
+
   if (isSignup) {
     const signupEmail = localStorage.getItem('signup_email');
     const registrationProgress = localStorage.getItem('registration_progress') || '';
@@ -59,14 +64,14 @@ const RouteGuard = ({ route }) => {
     }
   }
   if (allowedRoles && !allowedRoles.includes(userRole)) {
-    console.log('Access denied - redirecting');
+    console.log(`Access denied - user role: ${userRole}, required roles: ${allowedRoles.join(', ')}`);
     if (userRole === 'admin' || userRole === 'student' || userRole === 'professor') {
       return <Navigate to="/dashboard" replace />;
     }
     return <Navigate to="/" replace />;
   }
 
-  console.log('Access granted');
+  console.log(`Access granted to ${currentPath} for ${userRole}`);
   return element || <Outlet />;
 };
 

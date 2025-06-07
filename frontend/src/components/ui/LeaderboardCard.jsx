@@ -14,7 +14,7 @@ import {
   faGamepad,
   faUserCircle
 } from '@fortawesome/free-solid-svg-icons';
-import './LeaderboardCard.scss';
+// Styles are now in Home.scss
 
 // API base URL - change this to your actual API endpoint
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';

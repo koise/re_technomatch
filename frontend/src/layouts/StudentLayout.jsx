@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
-import AuthTopBar from "../components/AuthTopBar";
 import Spinner from "../components/ui/Spinner";
 
 const StudentLayout = () => {
@@ -54,8 +53,8 @@ const StudentLayout = () => {
     }
 
     return (
-        <div className="student-layout">
-            <AuthTopBar />
+        <div className="student-layout bg-gray-900 min-h-screen">
+            <StudentHeader />
             <div className="layout-container">
                 <main>
                     <Outlet />

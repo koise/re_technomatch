@@ -120,6 +120,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = (newToken, username, role) => {
+        console.log(`AuthContext: Logging in user - Username: ${username}, Role: ${role}`);
         setToken(newToken);
         setUsername(username);
         setUserRole(role);
@@ -127,6 +128,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", newToken);
         localStorage.setItem("role", role);
         localStorage.setItem("user_id", userId);
+        console.log(`AuthContext: User logged in successfully - Role set to: ${role}`);
     };
 
     const handleLogout = () => {
