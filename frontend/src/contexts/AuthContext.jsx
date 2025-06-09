@@ -38,33 +38,29 @@ export const AuthProvider = ({ children }) => {
         document.body.classList.add(theme);
     }, []);
 
-    // Fetch auth data on mount
+    // Fetch auth data on mount - DISABLED API CALL
     useEffect(() => {
-        // Existing auth logic
+        // MOCK user validation instead of API call
         if (token) {
-            fetch("/api/user", {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-                .then((res) => {
-                    if (!res.ok) throw new Error("Invalid token");
-                    return res.json();
-                })
-                .then((data) => {
-                    setUserRole(data.data.role);
-                    setUsername(
-                        `${data.data.profile.username}`
-                    );
-                    setUserId(data.data.id);
-                    localStorage.setItem(
-                        "username",
-                        `${data.data.profile.username}`
-                    );
-                    localStorage.setItem("role", data.data.role);
-                    localStorage.setItem("user_id", data.data.id);
-                })
-                .catch(() => {
-                    handleLogout();
-                });
+            // Instead of fetching from API, validate from stored data
+            console.log("Using mock auth validation instead of API call");
+            
+            // Simulate successful validation with stored data
+            const storedRole = localStorage.getItem("role");
+            const storedUsername = localStorage.getItem("username");
+            const storedUserId = localStorage.getItem("user_id");
+            
+            if (storedRole && storedUsername) {
+                setUserRole(storedRole);
+                setUsername(storedUsername);
+                setUserId(storedUserId || '1'); // Default ID if not set
+                
+                console.log(`Auth context initialized with stored data: ${storedUsername} (${storedRole})`);
+            } else {
+                // Invalid or incomplete data, log out
+                console.log("Invalid stored credentials, logging out");
+                handleLogout();
+            }
         }
     }, [token]);
 
@@ -127,23 +123,22 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("username", username);
         localStorage.setItem("token", newToken);
         localStorage.setItem("role", role);
-        localStorage.setItem("user_id", userId);
+        localStorage.setItem("user_id", "1"); // Default mock user ID
         console.log(`AuthContext: User logged in successfully - Role set to: ${role}`);
     };
 
     const handleLogout = () => {
-        fetch("/api/logout", {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-        }).finally(() => {
-            setToken(null);
-            setUsername("");
-            setUserRole("Guest");
-            localStorage.removeItem("username");
-            localStorage.removeItem("token");
-            localStorage.removeItem("role");
-            localStorage.removeItem("user_id");
-        });
+        // DISABLED API CALL - No need to call the server
+        console.log("Logging out user (API call disabled)");
+        
+        // Just clear local data
+        setToken(null);
+        setUsername("");
+        setUserRole("Guest");
+        localStorage.removeItem("username");
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        localStorage.removeItem("user_id");
     };
 
     // Enhanced theme update function

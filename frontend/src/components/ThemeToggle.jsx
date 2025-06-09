@@ -52,7 +52,7 @@ const ThemeToggle = ({ size = 'medium', className = '', showLabel = false }) => 
         </div>
         <span className="sr-only">{isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}</span>
       </button>
-      
+    
       {showLabel && (
         <span className="theme-toggle-label">
           {isDarkMode ? 'Dark Mode' : 'Light Mode'}
@@ -62,4 +62,4 @@ const ThemeToggle = ({ size = 'medium', className = '', showLabel = false }) => 
   );
 };
 
-export default ThemeToggle; 
+export default ThemeToggle;

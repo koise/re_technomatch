@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 import Spinner from "../components/ui/Spinner";
+import StudentHeader from "../components/StudentHeader";
 
 const StudentLayout = () => {
     const { token } = useAuth();

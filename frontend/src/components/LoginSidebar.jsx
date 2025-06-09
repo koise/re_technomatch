@@ -65,6 +65,8 @@ const LoginSidebar = ({ isOpen, onClose }) => {
       remember: rememberMe
     };
     
+    console.log('Attempting to log in with:', identifier);
+    
     try {
       // For development: Mock authentication
       // Comment this block when connecting to a real API
@@ -77,6 +79,7 @@ const LoginSidebar = ({ isOpen, onClose }) => {
             );
             
             if (user) {
+              console.log('Mock auth successful for user:', user.username, 'with role:', user.role);
               resolve({ 
                 success: true, 
                 data: { 
@@ -85,6 +88,7 @@ const LoginSidebar = ({ isOpen, onClose }) => {
                 } 
               });
             } else {
+              console.log('Mock auth failed: Invalid credentials');
               reject({ 
                 success: false, 
                 message: 'Invalid username/email or password' 
@@ -106,11 +110,13 @@ const LoginSidebar = ({ isOpen, onClose }) => {
         
         // Redirect based on user role
         if (user.role === 'student') {
+          console.log('Redirecting to student dashboard at: /dashboard');
           navigate('/dashboard');
-          console.log('Redirecting to student dashboard');
         } else if (user.role === 'admin') {
+          console.log('Redirecting to admin dashboard');
           navigate('/admin/dashboard');
         } else if (user.role === 'professor') {
+          console.log('Redirecting to professor dashboard');
           navigate('/professor/dashboard');
         }
       }

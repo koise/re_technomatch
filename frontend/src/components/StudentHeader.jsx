@@ -1,28 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FaBell, 
   FaCog, 
   FaUser, 
-  FaCoins, 
   FaChevronDown, 
-  FaUserFriends, 
   FaGamepad, 
   FaCrown, 
   FaTrophy,
   FaSignOutAlt,
-  FaEnvelope,
-  FaExclamationCircle,
-  FaPuzzlePiece
+  FaCode,
+  FaChartLine,
+  FaLightbulb,
+  FaBolt,
+  FaPuzzlePiece,
+  FaRunning,
+  FaUsers,
+  FaUserPlus
 } from 'react-icons/fa';
+import { useAuth } from '../contexts/AuthContext';
+import ThemeToggle from './ThemeToggle';
+import '../styles/main.scss';
+import '../styles/global.scss';
+import './StudentHeader.scss';
+import FriendsSidebar from './FriendsSidebar';
 
 const StudentHeader = () => {
+  const { theme, toggleTheme } = useAuth();
+  
   // State for dropdown menus
   const [playDropdownOpen, setPlayDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [friendsOpen, setFriendsOpen] = useState(false);
+  const [friendSidebarOpen, setFriendSidebarOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [showXpAnimation, setShowXpAnimation] = useState(false);
+  const [xpGained, setXpGained] = useState(0);
   
   // Mock user data
   const user = {
@@ -30,24 +44,74 @@ const StudentHeader = () => {
     email: "alex.johnson@example.com",
     level: 42,
     xp: 35,
-    coins: 942,
+    maxXp: 50,
+    rank: "TechnoCrat",
+    rankColor: "linear-gradient(135deg, #00c6ff, #0072ff)",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg"
   };
   
   // Mock notifications
   const notifications = [
-    { id: 1, title: 'New Challenge', message: 'Tree Traversal challenge is available', time: '2h ago', read: false },
-    { id: 2, title: 'Friend Request', message: 'CodeNinja wants to add you', time: '3h ago', read: false },
-    { id: 3, title: 'Achievement Unlocked', message: '7-day streak achieved!', time: '1d ago', read: true }
+    { id: 1, title: 'New Challenge', message: 'Tree Traversal challenge is available', time: '2h ago', read: false, icon: <FaCode />, type: 'challenge' },
+    { id: 2, title: 'Achievement Unlocked', message: '7-day streak achieved!', time: '1d ago', read: true, icon: <FaTrophy />, type: 'achievement' }
+  ];
+
+  // Play menu options
+  const playOptions = [
+    { 
+      id: 1, 
+      name: 'Progressive', 
+      icon: <FaRunning />, 
+      color: '#4776E6',
+      description: 'Learn at your own pace'
+    },
+    { 
+      id: 2, 
+      name: 'Competitive', 
+      icon: <FaTrophy />, 
+      color: '#FF416C',
+      description: 'Compete with other students'
+    },
+    { 
+      id: 3, 
+      name: 'Contest', 
+      icon: <FaPuzzlePiece />, 
+      color: '#8E2DE2',
+      description: 'Coming Soon',
+      disabled: true
+    }
   ];
   
-  // Mock friends
-  const friends = [
-    { id: 1, name: 'CodeNinja', status: 'online', avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
-    { id: 2, name: 'ByteWizard', status: 'online', avatar: 'https://randomuser.me/api/portraits/men/67.jpg' },
-    { id: 3, name: 'AlgoQueen', status: 'idle', avatar: 'https://randomuser.me/api/portraits/women/33.jpg' },
-    { id: 4, name: 'DevMaster', status: 'offline', avatar: 'https://randomuser.me/api/portraits/men/52.jpg' }
-  ];
+  // Simulated XP gain animation effect
+  useEffect(() => {
+    // Simulate XP gain every 30 seconds
+    const interval = setInterval(() => {
+      const randomXP = Math.floor(Math.random() * 5) + 1;
+      setXpGained(randomXP);
+      setShowXpAnimation(true);
+      setTimeout(() => setShowXpAnimation(false), 3000);
+    }, 30000);
+    
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+  
+  // Handle scroll effect for header
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
   
   // Close all dropdowns
   const closeAllDropdowns = () => {
@@ -90,206 +154,264 @@ const StudentHeader = () => {
     setSettingsOpen(false);
   };
   
-  const toggleFriends = (e) => {
+  const toggleFriendSidebar = (e) => {
     e.stopPropagation();
-    setFriendsOpen(!friendsOpen);
+    setFriendSidebarOpen(!friendSidebarOpen);
     closeAllDropdowns();
   };
   
   // Count unread notifications
   const unreadCount = notifications.filter(n => !n.read).length;
-  
-  // Count online friends
-  const onlineFriendsCount = friends.filter(f => f.status === 'online' || f.status === 'idle').length;
 
   return (
     <>
-      <header className="bg-gray-900 border-b border-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between py-4">
+      <header className={`student-header ${isScrolled ? 'scrolled' : ''} ${theme === 'light' ? 'light' : 'dark'}`}>
+        <div className="header-container">
+          <div className="header-content">
             {/* Logo */}
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold">
-                <Link to="/dashboard">
-                  <span className="text-red-500">Techno</span>
-                  <span className="text-white">Match</span>
-                </Link>
-              </h1>
+            <div className="logo-container">
+              <Link to="/dashboard" className="logo">
+                <span className="logo-techno">Techno</span>
+                <span className="logo-match">Match</span>
+              </Link>
             </div>
             
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link to="/dashboard" className="text-white hover:text-red-500 font-medium">Dashboard</Link>
-              <Link to="/classes" className="text-gray-400 hover:text-white font-medium">Classes</Link>
+            {/* Navigation - Centered */}
+            <nav className="main-nav">
+              <Link to="/dashboard" className="nav-item active">
+                <FaChartLine className="nav-icon" />
+                <span>Dashboard</span>
+                <div className="nav-highlight"></div>
+              </Link>
               
-              {/* Play Button Dropdown */}
-              <div className="relative">
+              {/* Play Button Dropdown - Centered */}
+              <div className="nav-item-dropdown">
                 <button 
-                  className="flex items-center space-x-1 bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md"
+                  className="nav-btn play-btn"
                   onClick={togglePlayDropdown}
                 >
+                  <FaGamepad className="nav-icon" />
                   <span>Play</span>
-                  <FaChevronDown className="h-3 w-3 ml-1" />
+                  <FaChevronDown className="dropdown-arrow" />
+                  <div className="nav-highlight"></div>
                 </button>
                 
                 {playDropdownOpen && (
-                  <div className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-50">
-                    <Link to="/competitive" className="flex items-center px-4 py-2 text-white hover:bg-gray-700">
-                      <FaGamepad className="mr-2" />
-                      Competitive
-                    </Link>
-                    <Link to="/practice" className="flex items-center px-4 py-2 text-white hover:bg-gray-700">
-                      <FaPuzzlePiece className="mr-2" />
-                      Practice
-                    </Link>
-                    <Link to="/ranked" className="flex items-center px-4 py-2 text-white hover:bg-gray-700">
-                      <FaCrown className="mr-2" />
-                      Ranked
-                    </Link>
+                  <div className="dropdown-menu game-modes-dropdown game-themed-dropdown">
+                    <div className="dropdown-header">
+                      <h3>SELECT GAME MODE</h3>
+                    </div>
+                    <div className="game-modes-container">
+                      {playOptions.map(option => (
+                        <Link 
+                          to={option.disabled ? "#" : `/play/${option.id}`} 
+                          key={option.id} 
+                          className={`game-mode-item ${option.disabled ? 'disabled' : ''}`}
+                          onClick={e => option.disabled && e.preventDefault()}
+                        >
+                          <div className="game-mode-icon" style={{ backgroundColor: `${option.color}20`, color: option.color }}>
+                            {option.icon}
+                          </div>
+                          <div className="game-mode-content">
+                            <span className="game-mode-name">{option.name}</span>
+                            <span className="game-mode-description">{option.description}</span>
+                          </div>
+                          {!option.disabled && 
+                            <div className="game-mode-arrow">
+                              <FaChevronDown />
+                            </div>
+                          }
+                          {option.disabled && 
+                            <div className="coming-soon-tag">COMING SOON</div>
+                          }
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
               
-              <Link to="/leaderboard" className="text-gray-400 hover:text-white font-medium">Leaderboard</Link>
+              <Link to="/classes" className="nav-item">
+                <FaLightbulb className="nav-icon" />
+                <span>Classes</span>
+                <div className="nav-highlight"></div>
+              </Link>
             </nav>
             
             {/* User Info & Icons */}
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <div className="text-sm mr-1">
-                  <span className="bg-purple-800 text-white px-2 py-1 rounded-md">Level {user.level}</span>
+            <div className="user-controls">
+              {/* XP and Level */}
+              <div className={`user-progress ${showXpAnimation ? 'xp-gained' : ''}`}>
+                <div className="level-badge">
+                  {user.level}
+                  <div className="level-glow"></div>
                 </div>
-                <div className="text-xs text-gray-400">
-                  <span>{user.xp}/50 XP</span>
+                <div className="xp-container">
+                  <div className="xp-bar">
+                    <div className="xp-fill" style={{ width: `${Math.round((user.xp / user.maxXp) * 100)}%` }}></div>
+                    <div className="xp-particles"></div>
+                  </div>
+                  <div className="xp-text">
+                    <span className="xp-value">{user.xp}/{user.maxXp} XP</span>
+                    {showXpAnimation && (
+                      <span className="xp-gain">+{xpGained} XP</span>
+                    )}
+                  </div>
                 </div>
               </div>
               
-              <div className="flex items-center text-yellow-500">
-                <FaCoins className="mr-1" />
-                <span className="font-medium">{user.coins}</span>
-              </div>
-              
-              {/* Notification Dropdown */}
-              <div className="relative">
+              {/* Friends Button */}
+              <div className="header-icon-container">
                 <button 
-                  className="text-gray-400 hover:text-white relative"
-                  onClick={toggleNotifications}
+                  className={`header-icon-btn ${friendSidebarOpen ? 'active' : ''}`}
+                  onClick={toggleFriendSidebar}
+                  aria-label="Friends"
                 >
-                  <FaBell size={20} />
+                  <FaUsers />
+                </button>
+              </div>
+              
+              {/* Notification Bell */}
+              <div className="header-icon-container">
+                <button 
+                  className={`header-icon-btn ${notificationsOpen ? 'active' : ''} ${unreadCount > 0 ? 'has-alert' : ''}`}
+                  onClick={toggleNotifications}
+                  aria-label="Notifications"
+                >
+                  <FaBell />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-xs text-white w-4 h-4 flex items-center justify-center rounded-full">
-                      {unreadCount}
-                    </span>
+                    <span className="notification-count">{unreadCount}</span>
                   )}
                 </button>
                 
                 {notificationsOpen && (
-                  <div className="absolute right-0 mt-2 w-80 bg-gray-800 rounded-md shadow-lg z-50">
-                    <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
-                      <h3 className="text-white font-semibold">Notifications</h3>
-                      <button className="text-xs text-blue-400 hover:underline">Mark all as read</button>
+                  <div className="dropdown-menu notifications-dropdown game-themed-dropdown">
+                    <div className="dropdown-header">
+                      <h3>Notifications</h3>
+                      <button className="mark-all-read">Mark all as read</button>
                     </div>
-                    <div className="max-h-72 overflow-y-auto">
+                    <div className="notifications-list">
                       {notifications.map(notification => (
                         <div 
                           key={notification.id} 
-                          className={`px-4 py-2 border-b border-gray-700 hover:bg-gray-700 ${
-                            notification.read ? '' : 'bg-gray-700 bg-opacity-50'
-                          }`}
+                          className={`notification-item ${!notification.read ? 'unread' : ''} notification-${notification.type}`}
                         >
-                          <div className="flex justify-between">
-                            <h4 className="text-sm font-semibold text-white">{notification.title}</h4>
-                            {!notification.read && (
-                              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                            )}
+                          <div className="notification-icon">
+                            {notification.icon}
                           </div>
-                          <p className="text-xs text-gray-400 mt-1">{notification.message}</p>
-                          <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                          <div className="notification-content">
+                            <div className="notification-title">{notification.title}</div>
+                            <div className="notification-message">{notification.message}</div>
+                            <div className="notification-time">{notification.time}</div>
+                          </div>
+                          {!notification.read && <div className="unread-indicator"></div>}
                         </div>
                       ))}
                     </div>
-                    <div className="px-4 py-2 border-t border-gray-700">
-                      <button className="text-sm text-center w-full text-blue-400 hover:underline">
-                        View all notifications
-                      </button>
+                    <div className="dropdown-footer">
+                      <Link to="/notifications">View all notifications</Link>
                     </div>
                   </div>
                 )}
               </div>
               
-              {/* Friends Button */}
-              <button 
-                className="text-gray-400 hover:text-white relative"
-                onClick={toggleFriends}
-              >
-                <FaUserFriends size={20} />
-                {onlineFriendsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-green-500 text-xs text-white w-4 h-4 flex items-center justify-center rounded-full">
-                    {onlineFriendsCount}
-                  </span>
-                )}
-              </button>
-              
               {/* Settings Dropdown */}
-              <div className="relative">
+              <div className="header-icon-container">
                 <button 
-                  className="text-gray-400 hover:text-white"
+                  className={`header-icon-btn ${settingsOpen ? 'active' : ''}`}
                   onClick={toggleSettings}
+                  aria-label="Settings"
                 >
-                  <FaCog size={20} />
+                  <FaCog />
                 </button>
                 
                 {settingsOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-50">
-                    <Link to="/settings/profile" className="block px-4 py-2 text-white hover:bg-gray-700">
-                      Profile Settings
+                  <div className="dropdown-menu settings-dropdown game-themed-dropdown">
+                    <div className="dropdown-header">
+                      <h3>Settings</h3>
+                    </div>
+                    
+                    <div className="settings-theme-section">
+                      <div className="settings-section-title">
+                        <FaLightbulb className="settings-section-icon" />
+                        <span>Theme</span>
+                      </div>
+                      <ThemeToggle showLabel={true} size="medium" />
+                    </div>
+                    
+                    <div className="dropdown-divider"></div>
+                    
+                    <Link to="/settings/profile" className="dropdown-item">
+                      <FaUser className="dropdown-icon" />
+                      <span>Profile Settings</span>
                     </Link>
-                    <Link to="/settings/account" className="block px-4 py-2 text-white hover:bg-gray-700">
-                      Account Settings
+                    <Link to="/settings/account" className="dropdown-item">
+                      <FaCog className="dropdown-icon" />
+                      <span>Account Settings</span>
                     </Link>
-                    <Link to="/settings/notifications" className="block px-4 py-2 text-white hover:bg-gray-700">
-                      Notification Settings
-                    </Link>
-                    <div className="border-t border-gray-700 my-1"></div>
-                    <Link to="/help" className="block px-4 py-2 text-white hover:bg-gray-700">
-                      Help & Support
+                    <Link to="/settings/notifications" className="dropdown-item">
+                      <FaBell className="dropdown-icon" />
+                      <span>Notification Settings</span>
                     </Link>
                   </div>
                 )}
               </div>
               
               {/* Profile Dropdown */}
-              <div className="relative">
+              <div className="profile-container">
                 <button 
-                  className="flex items-center"
+                  className={`profile-btn ${profileOpen ? 'active' : ''}`}
                   onClick={toggleProfile}
                 >
-                  <img 
-                    src={user.avatar} 
-                    alt={user.name} 
-                    className="w-8 h-8 rounded-full border-2 border-gray-700"
-                  />
+                  <div className="avatar-wrapper">
+                    <img 
+                      src={user.avatar} 
+                      alt={user.name} 
+                      className="user-avatar"
+                    />
+                    <div className="avatar-border"></div>
+                    <div className="avatar-rank-indicator" style={{ background: user.rankColor }}></div>
+                  </div>
+                  <div className="user-name-display">
+                    <span>{user.name}</span>
+                    <div className="user-rank-badge">
+                      <FaCrown className="rank-icon" />
+                      <span>{user.rank}</span>
+                    </div>
+                  </div>
                 </button>
                 
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-50">
-                    <div className="px-4 py-2 border-b border-gray-700">
-                      <p className="text-white font-semibold">{user.name}</p>
-                      <p className="text-xs text-gray-400">{user.email}</p>
+                  <div className="dropdown-menu profile-dropdown game-themed-dropdown">
+                    <div className="profile-header">
+                      <div className="profile-avatar">
+                        <img src={user.avatar} alt={user.name} />
+                        <div className="profile-level-badge">{user.level}</div>
+                      </div>
+                      <div className="profile-info">
+                        <h3 className="profile-name">{user.name}</h3>
+                        <div className="profile-rank" style={{ background: user.rankColor }}>
+                          <FaCrown className="rank-icon" /> {user.rank}
+                        </div>
+                        <p className="profile-email">{user.email}</p>
+                      </div>
                     </div>
-                    <Link to="/profile" className="block px-4 py-2 text-white hover:bg-gray-700">
-                      My Profile
-                    </Link>
-                    <Link to="/achievements" className="block px-4 py-2 text-white hover:bg-gray-700">
-                      Achievements
-                    </Link>
-                    <Link to="/settings" className="block px-4 py-2 text-white hover:bg-gray-700">
-                      Settings
-                    </Link>
-                    <div className="border-t border-gray-700 my-1"></div>
-                    <button className="w-full text-left px-4 py-2 text-white hover:bg-gray-700">
-                      Logout
-                    </button>
+                    
+                    <div className="dropdown-content">
+                      <Link to="/profile" className="dropdown-item">
+                        <FaUser className="dropdown-icon" />
+                        <span>Profile</span>
+                      </Link>
+                      <Link to="/settings" className="dropdown-item">
+                        <FaCog className="dropdown-icon" />
+                        <span>Settings</span>
+                      </Link>
+                      <div className="dropdown-divider"></div>
+                      <Link to="/logout" className="dropdown-item logout-item">
+                        <FaSignOutAlt className="dropdown-icon" />
+                        <span>Logout</span>
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
@@ -299,96 +421,12 @@ const StudentHeader = () => {
       </header>
       
       {/* Friends Sidebar */}
-      {friendsOpen && (
-        <>
-          <div className="fixed top-0 right-0 w-64 h-full bg-gray-800 shadow-lg z-50">
-            <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-white">Friends</h2>
-              <button 
-                className="text-gray-400 hover:text-white"
-                onClick={toggleFriends}
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="p-4 border-b border-gray-700">
-              <input
-                type="text"
-                placeholder="Search friends..."
-                className="w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            
-            <div className="p-4">
-              <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">Online</h3>
-              {friends
-                .filter(friend => friend.status === 'online')
-                .map(friend => (
-                  <div key={friend.id} className="flex items-center mb-3">
-                    <div className="relative">
-                      <img 
-                        src={friend.avatar} 
-                        alt={friend.name} 
-                        className="w-8 h-8 rounded-full mr-2" 
-                      />
-                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-800"></span>
-                    </div>
-                    <span className="text-white">{friend.name}</span>
-                  </div>
-                ))
-              }
-              
-              <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2 mt-4">Idle</h3>
-              {friends
-                .filter(friend => friend.status === 'idle')
-                .map(friend => (
-                  <div key={friend.id} className="flex items-center mb-3">
-                    <div className="relative">
-                      <img 
-                        src={friend.avatar} 
-                        alt={friend.name} 
-                        className="w-8 h-8 rounded-full mr-2" 
-                      />
-                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-yellow-500 rounded-full border-2 border-gray-800"></span>
-                    </div>
-                    <span className="text-white">{friend.name}</span>
-                  </div>
-                ))
-              }
-              
-              <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2 mt-4">Offline</h3>
-              {friends
-                .filter(friend => friend.status === 'offline')
-                .map(friend => (
-                  <div key={friend.id} className="flex items-center mb-3">
-                    <div className="relative">
-                      <img 
-                        src={friend.avatar} 
-                        alt={friend.name} 
-                        className="w-8 h-8 rounded-full mr-2 opacity-50" 
-                      />
-                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 rounded-full border-2 border-gray-800"></span>
-                    </div>
-                    <span className="text-gray-400">{friend.name}</span>
-                  </div>
-                ))
-              }
-            </div>
-          </div>
-          
-          {/* Overlay for friends sidebar */}
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={toggleFriends}
-          ></div>
-        </>
-      )}
+      {friendSidebarOpen && <FriendsSidebar onClose={() => setFriendSidebarOpen(false)} theme={theme} />}
       
       {/* Overlay to close dropdowns when clicking outside */}
       {(playDropdownOpen || notificationsOpen || settingsOpen || profileOpen) && (
         <div 
-          className="fixed inset-0 z-30"
+          className="dropdown-overlay"
           onClick={closeAllDropdowns}
         ></div>
       )}

@@ -229,7 +229,7 @@ const LoadingScreen = () => {
   );
 };
 
-const HeroSection = () => {
+const HeroSection = ({ onLoginClick }) => {
   const [animateButton, setAnimateButton] = useState(false);
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(false);
@@ -317,6 +317,7 @@ const HeroSection = () => {
               className={`btn btn-primary btn-lg ${animateButton ? 'super-pulse' : 'pulse-animation'}`}
               onMouseEnter={handleButtonHover}
               onMouseLeave={handleButtonLeave}
+              onClick={onLoginClick}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -603,7 +604,7 @@ const FeaturesSection = () => {
   );
 };
 
-const BattleModesSection = () => {
+const BattleModesSection = ({ onLoginClick }) => {
   const [activeCard, setActiveCard] = useState(null);
   const [hoverCard, setHoverCard] = useState(null);
   const [battleModes, setBattleModes] = useState([]);
@@ -713,10 +714,17 @@ const BattleModesSection = () => {
                   <span>Coming Soon</span>
                 </div>
               ) : mockData.userProgression.level >= mode.unlockedAt ? (
-                <button className="btn battle-btn" style={{ 
+                <button 
+                  className="btn battle-btn" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onLoginClick();
+                  }}
+                  style={{ 
                   backgroundColor: mode.borderColor,
                   boxShadow: `0 5px 15px ${mode.borderColor}50` 
-                }}>
+                  }}
+                >
                   <span className="battle-icon">
                     <FontAwesomeIcon icon={faGamepad} />
                   </span> 
@@ -773,7 +781,7 @@ const BattleModesSection = () => {
   );
 };
 
-const LeaderboardSection = () => {
+const LeaderboardSection = ({ onLoginClick }) => {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -1453,62 +1461,18 @@ const LeaderboardSection = () => {
       </div>
         
       <div className="leaderboard-footer">
-        <motion.a 
-          href="/leaderboard" 
+        <motion.div>
+          <motion.button 
           className="join-leaderboard-btn"
+            onClick={onLoginClick}
           whileHover={{ scale: 1.05, boxShadow: "0 5px 15px rgba(0,0,0,0.2)" }}
           whileTap={{ scale: 0.95 }}
         >
           <FontAwesomeIcon icon={faRocket} />
           <span>Join the Battle</span>
-        </motion.a>
-      </div>
-    </motion.section>
-  );
-};
-
-const CTASection = ({ onLoginClick }) => {
-  const [shake, setShake] = useState(false);
-  
-  const handleButtonHover = () => {
-    setShake(true);
-    setTimeout(() => setShake(false), 500);
-  };
-  
-  return (
-    <motion.section 
-      className="cta-section"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.5 }}
-      variants={fadeIn}
-    >
-      <motion.div 
-        className="cta-content"
-        variants={slideUp}
-      >
-        {/* Decorative tech elements */}
-        <div className="tech-circle circle-1"></div>
-        <div className="tech-circle circle-2"></div>
-        <div className="tech-dot dot-1"></div>
-        <div className="tech-dot dot-2"></div>
-        <div className="tech-dot dot-3"></div>
-        
-        <h2>Are you ready to accept the challenge?</h2>
-        <p>Join the TechnoMatch arena and battle your way to coding greatness</p>
-        <motion.button 
-          className={`btn btn-primary btn-large ${shake ? 'shake-animation' : ''}`}
-          onMouseEnter={handleButtonHover}
-          onClick={onLoginClick}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <span className="btn-icon">
-            <FontAwesomeIcon icon={faGamepad} />
-          </span>
-          Join The Battle
         </motion.button>
       </motion.div>
+      </div>
     </motion.section>
   );
 };
@@ -1577,11 +1541,10 @@ const Home = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <HeroSection />
+        <HeroSection onLoginClick={toggleLoginSidebar} />
         <FeaturesSection />
-        <BattleModesSection />
-        <LeaderboardSection />
-        <CTASection onLoginClick={toggleLoginSidebar} />
+        <BattleModesSection onLoginClick={toggleLoginSidebar} />
+        <LeaderboardSection onLoginClick={toggleLoginSidebar} />
       </motion.main>
       
       <Footer />
