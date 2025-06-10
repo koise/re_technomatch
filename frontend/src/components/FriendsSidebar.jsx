@@ -1,10 +1,27 @@
-import React, { useState } from 'react';
-import { FaTimes, FaSearch, FaUserPlus, FaCircle, FaEllipsisV, FaCommentAlt, FaGamepad } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaTimes, FaSearch, FaUserPlus, FaCircle, FaEllipsisV, FaCommentAlt, FaGamepad, FaChevronRight, FaUsers, FaUserFriends } from 'react-icons/fa';
+import { useSettings } from '../contexts/ThemeContext'; // Import the settings context
 import './FriendsSidebar.scss';
 
-const FriendsSidebar = ({ onClose, theme = 'dark' }) => {
+const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
   const [activeTab, setActiveTab] = useState('online');
   const [searchQuery, setSearchQuery] = useState('');
+  const [mounted, setMounted] = useState(false);
+  
+  // Get settings from context
+  const settingsContext = useSettings ? useSettings() : null;
+  
+  // Use settings from context if available, otherwise use props
+  const effectiveTheme = settingsContext?.settings?.theme || theme;
+  const effectiveCompactMode = settingsContext?.settings?.compactMode !== undefined ? 
+    settingsContext.settings.compactMode : isCompact;
+  const showAnimations = settingsContext?.settings?.animations !== undefined ?
+    settingsContext.settings.animations : true;
+  
+  // Set mounted state after initial render for animations
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   // Mock friends data
   const friends = [
@@ -85,13 +102,45 @@ const FriendsSidebar = ({ onClose, theme = 'dark' }) => {
     return true;
   });
 
+  // Set animation classes
+  const sidebarClasses = [
+    'friends-sidebar',
+    effectiveTheme,
+    effectiveCompactMode ? 'compact-mode' : '',
+    mounted && showAnimations ? 'animated' : 'no-animation'
+  ].filter(Boolean).join(' ');
+
+  // Handle closing with animation
+  const handleClose = () => {
+    if (showAnimations && mounted) {
+      const sidebar = document.querySelector('.friends-sidebar');
+      sidebar.classList.add('slide-out');
+      setTimeout(() => {
+        onClose();
+      }, 300); // Match animation duration in CSS
+    } else {
+      onClose();
+    }
+  };
+
   return (
-    <div className={`friends-sidebar ${theme}`}>
-      <div className="friends-header">
-        <h3>Friends</h3>
-        <button className="close-btn" onClick={onClose}>
-          <FaTimes />
-        </button>
+    <div className={sidebarClasses}>
+      <div className={`friends-header ${effectiveCompactMode ? 'compact-header' : ''}`}>
+        <h3>
+          {effectiveCompactMode ? 'Friends' : 'Friends List'}
+          <span className="friends-count">{friends.length}</span>
+        </h3>
+        <div className="header-actions">
+          {effectiveCompactMode && (
+            <span className="online-count">
+              <FaCircle className="online-indicator" />
+              {friends.filter(f => f.status === 'online').length} online
+            </span>
+          )}
+          <button className="close-btn" onClick={handleClose}>
+            <FaTimes />
+          </button>
+        </div>
       </div>
 
       <div className="search-container">
@@ -99,7 +148,7 @@ const FriendsSidebar = ({ onClose, theme = 'dark' }) => {
           <FaSearch className="search-icon" />
           <input
             type="text"
-            placeholder="Search friends..."
+            placeholder={effectiveCompactMode ? "Search..." : "Search friends..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
@@ -138,42 +187,51 @@ const FriendsSidebar = ({ onClose, theme = 'dark' }) => {
         {activeTab !== 'requests' && (
           <div className="friends-list">
             {filteredFriends.length > 0 ? (
-              filteredFriends.map(friend => (
-                <div key={friend.id} className="friend-item">
-                  <div className="friend-avatar">
-                    <img src={friend.avatar} alt={friend.name} />
-                    <span className={`status-indicator ${friend.status}`}>
-                      <FaCircle />
-                    </span>
-                  </div>
-                  <div className="friend-info">
-                    <div className="friend-name">{friend.name}</div>
-                    <div className="friend-status">
-                      {friend.status === 'online' ? (
-                        friend.game ? (
-                          <span className="playing">
-                            <FaGamepad /> {friend.game}
-                          </span>
+              <>
+                {filteredFriends.map(friend => (
+                  <div key={friend.id} className="friend-item">
+                    <div className="friend-avatar">
+                      <img src={friend.avatar} alt={friend.name} />
+                      <span className={`status-indicator ${friend.status}`}>
+                        <FaCircle />
+                      </span>
+                    </div>
+                    <div className="friend-info">
+                      <div className="friend-name">{friend.name}</div>
+                      <div className="friend-status">
+                        {friend.status === 'online' ? (
+                          friend.game ? (
+                            <span className="playing">
+                              <FaGamepad /> {friend.game}
+                            </span>
+                          ) : (
+                            <span className="online">Online</span>
+                          )
                         ) : (
-                          <span className="online">Online</span>
-                        )
-                      ) : (
-                        <span className="offline">Last online {friend.lastActive}</span>
+                          <span className="offline">Last online {friend.lastActive}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="friend-actions">
+                      {friend.status === 'online' && (
+                        <button className="action-btn chat-btn">
+                          <FaCommentAlt />
+                        </button>
                       )}
+                      <button className="action-btn more-btn">
+                        <FaEllipsisV />
+                      </button>
                     </div>
                   </div>
-                  <div className="friend-actions">
-                    {friend.status === 'online' && (
-                      <button className="action-btn chat-btn">
-                        <FaCommentAlt />
-                      </button>
-                    )}
-                    <button className="action-btn more-btn">
-                      <FaEllipsisV />
-                    </button>
-                  </div>
+                ))}
+                <div className="view-all-container">
+                  <button className="view-all-btn">
+                    <FaUserFriends />
+                    <span>View All Friends</span>
+                    <FaChevronRight className="chevron-icon" />
+                  </button>
                 </div>
-              ))
+              </>
             ) : (
               <div className="empty-state">
                 <p>No friends found{searchQuery ? ' matching your search' : ''}</p>
@@ -184,23 +242,38 @@ const FriendsSidebar = ({ onClose, theme = 'dark' }) => {
 
         {activeTab === 'requests' && (
           <div className="requests-list">
-            {friendRequests.map(request => (
-              <div key={request.id} className="request-item">
-                <div className="friend-avatar">
-                  <img src={request.avatar} alt={request.name} />
-                </div>
-                <div className="request-info">
-                  <div className="friend-name">{request.name}</div>
-                  <div className="mutual-friends">
-                    {request.mutualFriends} mutual {request.mutualFriends === 1 ? 'friend' : 'friends'}
+            {friendRequests.length > 0 ? (
+              <>
+                {friendRequests.map(request => (
+                  <div key={request.id} className="request-item">
+                    <div className="friend-avatar">
+                      <img src={request.avatar} alt={request.name} />
+                    </div>
+                    <div className="request-info">
+                      <div className="friend-name">{request.name}</div>
+                      <div className="mutual-friends">
+                        {request.mutualFriends} mutual {request.mutualFriends === 1 ? 'friend' : 'friends'}
+                      </div>
+                    </div>
+                    <div className="request-actions">
+                      <button className="accept-btn">Accept</button>
+                      <button className="decline-btn">Decline</button>
+                    </div>
                   </div>
+                ))}
+                <div className="view-all-container">
+                  <button className="view-all-btn">
+                    <FaUsers />
+                    <span>View All Requests</span>
+                    <FaChevronRight className="chevron-icon" />
+                  </button>
                 </div>
-                <div className="request-actions">
-                  <button className="accept-btn">Accept</button>
-                  <button className="decline-btn">Decline</button>
-                </div>
+              </>
+            ) : (
+              <div className="empty-state">
+                <p>No friend requests</p>
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>

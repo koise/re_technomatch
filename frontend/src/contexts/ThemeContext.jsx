@@ -1,76 +1,186 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 
-// Create Theme Context
-const ThemeContext = createContext();
+// Create Settings Context (renamed from ThemeContext)
+const SettingsContext = createContext();
 
-// Cookie helper functions 
-// MAKE IT BASE ON SERVER TIME
+// Cookie helper functions
 const setCookie = (name, value, days = 365) => {
-  const date = new Date();
-  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-  const expires = `expires=${date.toUTCString()}`;
-  document.cookie = `${name}=${value};${expires};path=/;SameSite=Strict`;
+  try {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `expires=${date.toUTCString()}`;
+    const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
+    document.cookie = `${name}=${encodeURIComponent(stringValue)};${expires};path=/;SameSite=Strict`;
+    return true;
+  } catch (error) {
+    console.error('Error setting cookie:', error);
+    return false;
+  }
 };
 
 const getCookie = (name) => {
-  const cookieValue = document.cookie
-    .split('; ')
-    .find(row => row.startsWith(`${name}=`));
-  return cookieValue ? cookieValue.split('=')[1] : null;
+  try {
+    const nameEQ = `${name}=`;
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) {
+        const rawValue = c.substring(nameEQ.length, c.length);
+        const value = decodeURIComponent(rawValue);
+        // Try to parse as JSON if it looks like a JSON string
+        if ((value.startsWith('{') && value.endsWith('}')) || 
+            (value.startsWith('[') && value.endsWith(']'))) {
+          try {
+            return JSON.parse(value);
+          } catch (e) {
+            return value;
+          }
+        }
+        return value;
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting cookie:', error);
+    return null;
+  }
 };
 
-export const ThemeProvider = ({ children }) => {
-  // Check if there's a saved theme preference in cookies or use system preference
-  const getInitialTheme = () => {
-    const savedTheme = getCookie('theme');
-    if (savedTheme) {
-      return savedTheme;
+const deleteCookie = (name) => {
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+};
+
+// Default settings
+const defaultSettings = {
+  theme: 'dark',
+  font: 'sans-serif',
+  onlineStatus: true,
+  notifications: true,
+  soundEffects: true,
+  animations: true,
+  compactMode: false,
+  language: 'en',
+  colorAccent: 'red',
+  sessionTimeout: 60
+};
+
+export const SettingsProvider = ({ children }) => {
+  // Get initial settings from cookies or use defaults
+  const getInitialSettings = () => {
+    const savedSettings = getCookie('user_settings');
+    if (savedSettings) {
+      return { ...defaultSettings, ...savedSettings };
     }
-    // Check if user prefers dark mode via system settings
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    
+    // If no saved settings, check system preference for theme
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return { 
+      ...defaultSettings, 
+      theme: prefersDark ? 'dark' : 'light'
+    };
   };
 
-  const [theme, setTheme] = useState('light'); // Default to light as fallback
+  const [settings, setSettings] = useState(defaultSettings);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Initialize theme once component mounts (to avoid SSR hydration issues)
+  // Initialize settings once component mounts
   useEffect(() => {
-    setTheme(getInitialTheme());
+    setSettings(getInitialSettings());
+    setIsInitialized(true);
   }, []);
 
-  // Update cookie and document attributes when theme changes
+  // Apply settings to document when they change
   useEffect(() => {
-    if (theme) {
-      setCookie('theme', theme);
-      document.documentElement.setAttribute('data-theme', theme);
+    if (!isInitialized) return;
+    
+    // Save to cookie
+    setCookie('user_settings', settings);
+    
+    // Apply theme
+    document.documentElement.setAttribute('data-theme', settings.theme);
+    if (settings.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+      document.body.classList.add('dark-mode');
+      document.body.classList.remove('light-mode');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+      document.body.classList.add('light-mode');
+      document.body.classList.remove('dark-mode');
     }
-  }, [theme]);
+    
+    // Apply font
+    document.body.style.fontFamily = settings.font;
+    
+    // Apply compact mode
+    if (settings.compactMode) {
+      document.body.classList.add('compact-mode');
+    } else {
+      document.body.classList.remove('compact-mode');
+    }
+    
+    // Apply animations setting
+    if (!settings.animations) {
+      document.body.classList.add('disable-animations');
+    } else {
+      document.body.classList.remove('disable-animations');
+    }
+  }, [settings, isInitialized]);
 
+  // Update a single setting
+  const updateSetting = (key, value) => {
+    setSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  // Toggle theme helper function
   const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    updateSetting('theme', settings.theme === 'light' ? 'dark' : 'light');
+  };
+
+  // Toggle compact mode helper function
+  const toggleCompactMode = () => {
+    updateSetting('compactMode', !settings.compactMode);
+  };
+
+  // Reset settings to defaults
+  const resetSettings = () => {
+    setSettings(defaultSettings);
+    deleteCookie('user_settings');
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <SettingsContext.Provider 
+      value={{ 
+        settings, 
+        updateSetting, 
+        toggleTheme, 
+        toggleCompactMode, 
+        resetSettings,
+        defaultSettings
+      }}
+    >
       {children}
-    </ThemeContext.Provider>
+    </SettingsContext.Provider>
   );
 };
 
-// Custom hook to access the theme context
-export const useTheme = () => useContext(ThemeContext);
+// Custom hook to access the settings context
+export const useSettings = () => useContext(SettingsContext);
 
-// Theme Toggle Component
+// Theme Toggle Component (keeping for backward compatibility)
 export const ThemeToggle = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { settings, toggleTheme } = useSettings();
   
   return (
     <button
       onClick={toggleTheme}
-      className={`theme-toggle ${theme}`}
-      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      className={`theme-toggle ${settings.theme}`}
+      aria-label={`Switch to ${settings.theme === 'light' ? 'dark' : 'light'} mode`}
     >
       <div className="toggle-track">
-        {theme === 'light' ? (
+        {settings.theme === 'light' ? (
           <div className="dark-icon">🌙</div>
         ) : (
           <div className="light-icon">☀️</div>
@@ -79,4 +189,11 @@ export const ThemeToggle = () => {
       </div>
     </button>
   );
+};
+
+// For backward compatibility
+export const ThemeProvider = SettingsProvider;
+export const useTheme = () => {
+  const { settings, toggleTheme } = useSettings();
+  return { theme: settings.theme, toggleTheme };
 }; 

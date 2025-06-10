@@ -32,6 +32,23 @@
   --secondary-color: #b83280;
   --secondary-color-rgb: 184, 50, 128;
   --secondary-dark: #97266d;
+  
+  // Accent color system
+  --accent-color: var(--primary-color);
+  --accent-color-rgb: var(--primary-color-rgb);
+  --accent-dark: var(--primary-dark);
+  
+  // Color accents
+  --accent-red: #e53e3e;
+  --accent-red-rgb: 229, 62, 62;
+  --accent-blue: #3182ce;
+  --accent-blue-rgb: 49, 130, 206;
+  --accent-green: #38a169;
+  --accent-green-rgb: 56, 161, 105;
+  --accent-purple: #805ad5;
+  --accent-purple-rgb: 128, 90, 213;
+  --accent-orange: #dd6b20;
+  --accent-orange-rgb: 221, 107, 32;
 
   // Shadows
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../styles/main.scss';
 import './dashboard.scss';
@@ -8,6 +8,26 @@ const Dashboard = () => {
   const { theme } = useAuth();
   const [animateStats, setAnimateStats] = useState(false);
 
+  // Get the currently selected font from the body element
+  const [currentFont, setCurrentFont] = useState(document.body.style.fontFamily || 'system-ui');
+
+  // Update currentFont when the body font changes
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'style') {
+          setCurrentFont(document.body.style.fontFamily || 'system-ui');
+        }
+      });
+    });
+
+    observer.observe(document.body, { attributes: true });
+    
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   useEffect(() => {
     // Trigger animation after component mounts
     setTimeout(() => {
@@ -16,7 +36,10 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className={`game-dashboard ${theme === 'light' ? 'light' : 'dark'}`}>
+    <div 
+      className={`game-dashboard ${theme === 'light' ? 'light' : 'dark'}`} 
+      style={{ fontFamily: currentFont }}
+    >
       <div className="dashboard-content">
 
         
