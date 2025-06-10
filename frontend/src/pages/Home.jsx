@@ -4,6 +4,7 @@ import { useTheme } from '../contexts/ThemeContext.jsx';
 import GuestNavBar from '../components/GuestNavBar';
 import Footer from '../components/Footer';
 import LoginSidebar from '../components/LoginSidebar';
+import ToastDemo from '../components/ToastDemo';
 import axios from 'axios'; // Import axios 
 import { motion } from 'framer-motion'; // Import motion from framer-motion
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -1478,20 +1479,21 @@ const LeaderboardSection = ({ onLoginClick }) => {
 };
 
 const Home = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoginSidebarOpen, setIsLoginSidebarOpen] = useState(false);
+  const [showLoginSidebar, setShowLoginSidebar] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+  const [showToastDemo, setShowToastDemo] = useState(false);
   const { theme } = useTheme();
 
   // Toggle login sidebar
   const toggleLoginSidebar = () => {
-    setIsLoginSidebarOpen(!isLoginSidebarOpen);
+    setShowLoginSidebar(!showLoginSidebar);
   };
 
   // Handle loading effect
   useEffect(() => {
     // Simulate loading time
     const timer = setTimeout(() => {
-      setIsLoading(false);
+      setShowLoadingScreen(false);
     }, 1500);
     
     // Handle hash navigation for smooth scrolling
@@ -1521,19 +1523,24 @@ const Home = () => {
 
   // Add body class to prevent scrolling when sidebar is open
   useEffect(() => {
-    if (isLoginSidebarOpen) {
+    if (showLoginSidebar) {
       document.body.classList.add('sidebar-open');
     } else {
       document.body.classList.remove('sidebar-open');
     }
-  }, [isLoginSidebarOpen]);
+  }, [showLoginSidebar]);
+
+  // Add a button to toggle toast demo visibility
+  const toggleToastDemo = () => {
+    setShowToastDemo(!showToastDemo);
+  };
 
   return (
     <div className="home-container">
-      {isLoading && <LoadingScreen />}
+      {showLoadingScreen && <LoadingScreen />}
       
       <GuestNavBar onLoginClick={toggleLoginSidebar} />
-      <LoginSidebar isOpen={isLoginSidebarOpen} onClose={() => setIsLoginSidebarOpen(false)} />
+      <LoginSidebar isOpen={showLoginSidebar} onClose={toggleLoginSidebar} />
       
       <motion.main 
         className="main-content"
@@ -1547,6 +1554,21 @@ const Home = () => {
         <LeaderboardSection onLoginClick={toggleLoginSidebar} />
       </motion.main>
       
+      {/* Toast Demo Toggle Button */}
+      <div className="toast-demo-toggle">
+        <motion.button 
+          className="toggle-toast-demo-btn"
+          onClick={toggleToastDemo}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {showToastDemo ? "Hide Toast Demo" : "Show Toast Demo"}
+        </motion.button>
+      </div>
+      
+      {/* Conditionally render the ToastDemo component */}
+      {showToastDemo && <ToastDemo />}
+
       <Footer />
     </div>
   );

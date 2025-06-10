@@ -1,26 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { FaTimes, FaSearch, FaUserPlus, FaCircle, FaEllipsisV, FaCommentAlt, FaGamepad, FaChevronRight, FaUsers, FaUserFriends } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaTimes, FaSearch, FaUserPlus, FaCircle, FaEllipsisV, FaUserMinus, FaBan, FaChevronRight, FaUsers, FaUserFriends, FaGamepad, FaCheck } from 'react-icons/fa';
 import { useSettings } from '../contexts/ThemeContext'; // Import the settings context
+import { useToast } from '../contexts/ToastContext'; // Import the toast hook
 import './FriendsSidebar.scss';
 
 const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
   const [activeTab, setActiveTab] = useState('online');
   const [searchQuery, setSearchQuery] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [activeMenu, setActiveMenu] = useState(null);
+  const menuRef = useRef(null);
   
   // Get settings from context
   const settingsContext = useSettings ? useSettings() : null;
   
+  // Get toast functions
+  const toast = useToast ? useToast() : null;
+  
   // Use settings from context if available, otherwise use props
   const effectiveTheme = settingsContext?.settings?.theme || theme;
-  const effectiveCompactMode = settingsContext?.settings?.compactMode !== undefined ? 
-    settingsContext.settings.compactMode : isCompact;
   const showAnimations = settingsContext?.settings?.animations !== undefined ?
     settingsContext.settings.animations : true;
   
   // Set mounted state after initial render for animations
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setActiveMenu(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
   
   // Mock friends data
@@ -102,14 +120,6 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
     return true;
   });
 
-  // Set animation classes
-  const sidebarClasses = [
-    'friends-sidebar',
-    effectiveTheme,
-    effectiveCompactMode ? 'compact-mode' : '',
-    mounted && showAnimations ? 'animated' : 'no-animation'
-  ].filter(Boolean).join(' ');
-
   // Handle closing with animation
   const handleClose = () => {
     if (showAnimations && mounted) {
@@ -123,21 +133,85 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
     }
   };
 
+  // Toggle the more menu for a friend
+  const toggleMenu = (friendId) => {
+    setActiveMenu(activeMenu === friendId ? null : friendId);
+  };
+
+  // Handle unfriend action
+  const handleUnfriend = (friendId) => {
+    const friend = friends.find(f => f.id === friendId);
+    if (friend && toast) {
+      toast.showWarning(`Removed ${friend.name} from your friends`);
+    }
+    setActiveMenu(null);
+    // Implement actual unfriend logic here
+    console.log(`Unfriend user with ID: ${friendId}`);
+  };
+
+  // Handle block action
+  const handleBlock = (friendId) => {
+    const friend = friends.find(f => f.id === friendId);
+    if (friend && toast) {
+      toast.showError(`Blocked ${friend.name}`);
+    }
+    setActiveMenu(null);
+    // Implement actual block logic here
+    console.log(`Block user with ID: ${friendId}`);
+  };
+
+  // Handle accepting a friend request
+  const handleAcceptFriendRequest = (requestId) => {
+    const request = friendRequests.find(r => r.id === requestId);
+    if (request && toast) {
+      toast.showAchievement(
+        'New Friend Added', 
+        `${request.name} is now your friend`
+      );
+    }
+    // Implement actual accept logic here
+    console.log(`Accept friend request with ID: ${requestId}`);
+  };
+
+  // Handle declining a friend request
+  const handleDeclineFriendRequest = (requestId) => {
+    const request = friendRequests.find(r => r.id === requestId);
+    if (request && toast) {
+      toast.showInfo(`Declined ${request.name}'s friend request`);
+    }
+    // Implement actual decline logic here
+    console.log(`Decline friend request with ID: ${requestId}`);
+  };
+
+  // Handle viewing all friends
+  const handleViewAllFriends = () => {
+    // Navigate to friends page or expand the list
+    console.log('View all friends clicked');
+    if (toast) {
+      toast.showInfo('Navigating to Friends page');
+    }
+    // Implement actual navigation here
+  };
+
+  // Handle viewing all friend requests
+  const handleViewAllRequests = () => {
+    // Navigate to requests page or expand the list
+    console.log('View all requests clicked');
+    if (toast) {
+      toast.showInfo('Navigating to Friend Requests page');
+    }
+    // Implement actual navigation here
+  };
+
   return (
-    <div className={sidebarClasses}>
-      <div className={`friends-header ${effectiveCompactMode ? 'compact-header' : ''}`}>
+    <div className={`friends-sidebar ${effectiveTheme}`}>
+      <div className="friends-header">
         <h3>
-          {effectiveCompactMode ? 'Friends' : 'Friends List'}
+          Friends List
           <span className="friends-count">{friends.length}</span>
         </h3>
         <div className="header-actions">
-          {effectiveCompactMode && (
-            <span className="online-count">
-              <FaCircle className="online-indicator" />
-              {friends.filter(f => f.status === 'online').length} online
-            </span>
-          )}
-          <button className="close-btn" onClick={handleClose}>
+          <button className="close-btn" onClick={handleClose} aria-label="Close friends sidebar">
             <FaTimes />
           </button>
         </div>
@@ -148,133 +222,192 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
           <FaSearch className="search-icon" />
           <input
             type="text"
-            placeholder={effectiveCompactMode ? "Search..." : "Search friends..."}
+            placeholder="Search friends..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
+            aria-label="Search friends"
           />
         </div>
-        <button className="add-friend-btn">
-          <FaUserPlus />
-        </button>
       </div>
 
       <div className="tabs">
-        <button
-          className={`tab ${activeTab === 'online' ? 'active' : ''}`}
-          onClick={() => setActiveTab('online')}
-        >
-          Online
-          <span className="badge">{friends.filter(f => f.status === 'online').length}</span>
-        </button>
         <button 
-          className={`tab ${activeTab === 'all' ? 'active' : ''}`}
+          className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
           onClick={() => setActiveTab('all')}
         >
           All
-          <span className="badge">{friends.length}</span>
+        </button>
+        <button
+          className={`tab-btn ${activeTab === 'online' ? 'active' : ''}`}
+          onClick={() => setActiveTab('online')}
+        >
+          Online
+          <span className="online-count">
+            {friends.filter(f => f.status === 'online').length}
+          </span>
         </button>
         <button 
-          className={`tab ${activeTab === 'requests' ? 'active' : ''}`}
+          className={`tab-btn ${activeTab === 'requests' ? 'active' : ''}`}
           onClick={() => setActiveTab('requests')}
         >
           Requests
-          <span className="badge">{friendRequests.length}</span>
+          <span className="requests-count">{friendRequests.length}</span>
         </button>
       </div>
 
       <div className="friends-content">
-        {activeTab !== 'requests' && (
-          <div className="friends-list">
+        {activeTab !== 'requests' ? (
+          <>
+            <div className="section-title">
+              {activeTab === 'all' ? 'All Friends' : 'Online Friends'}
+              <span className="count">
+                {filteredFriends.length}
+              </span>
+            </div>
+            
             {filteredFriends.length > 0 ? (
-              <>
+              <div className="friends-list">
                 {filteredFriends.map(friend => (
                   <div key={friend.id} className="friend-item">
                     <div className="friend-avatar">
                       <img src={friend.avatar} alt={friend.name} />
-                      <span className={`status-indicator ${friend.status}`}>
-                        <FaCircle />
-                      </span>
+                      <div className={`status-indicator ${friend.status}`}></div>
                     </div>
+                    
                     <div className="friend-info">
                       <div className="friend-name">{friend.name}</div>
                       <div className="friend-status">
                         {friend.status === 'online' ? (
                           friend.game ? (
-                            <span className="playing">
-                              <FaGamepad /> {friend.game}
+                            <span className="playing-status">
+                              <FaGamepad className="game-icon" />
+                              {friend.game}
                             </span>
                           ) : (
-                            <span className="online">Online</span>
+                            <span className="online-status">
+                              <FaCircle className="online-indicator" />
+                              Online
+                            </span>
                           )
                         ) : (
-                          <span className="offline">Last online {friend.lastActive}</span>
+                          <span className="offline-status">
+                            Last online {friend.lastActive}
+                          </span>
                         )}
                       </div>
                     </div>
+                    
                     <div className="friend-actions">
                       {friend.status === 'online' && (
-                        <button className="action-btn chat-btn">
-                          <FaCommentAlt />
+                        <button className="invite-btn" aria-label={`Invite ${friend.name} to play`}>
+                          <FaGamepad />
                         </button>
                       )}
-                      <button className="action-btn more-btn">
+                      <button 
+                        className="more-btn" 
+                        onClick={() => toggleMenu(friend.id)}
+                        aria-expanded={activeMenu === friend.id}
+                        aria-label="More options"
+                      >
                         <FaEllipsisV />
                       </button>
+                      
+                      {activeMenu === friend.id && (
+                        <div className="friend-menu" ref={menuRef}>
+                          <button className="menu-item" onClick={() => handleUnfriend(friend.id)}>
+                            <FaUserMinus className="menu-icon" />
+                            <span>Unfriend</span>
+                          </button>
+                          <button className="menu-item danger" onClick={() => handleBlock(friend.id)}>
+                            <FaBan className="menu-icon" />
+                            <span>Block</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
-                <div className="view-all-container">
-                  <button className="view-all-btn">
+                
+                <div className={`view-all-container ${isCompact ? 'compact-view-all' : ''}`}>
+                  <button className="view-all-btn" onClick={handleViewAllFriends}>
                     <FaUserFriends />
-                    <span>View All Friends</span>
+                    View All Friends
                     <FaChevronRight className="chevron-icon" />
                   </button>
                 </div>
-              </>
+              </div>
             ) : (
               <div className="empty-state">
-                <p>No friends found{searchQuery ? ' matching your search' : ''}</p>
+                <FaUserFriends className="empty-icon" />
+                <p>No friends found{searchQuery ? ` matching "${searchQuery}"` : ''}</p>
+                {searchQuery && (
+                  <button 
+                    className="clear-search" 
+                    onClick={() => setSearchQuery('')}
+                  >
+                    Clear search
+                  </button>
+                )}
               </div>
             )}
+          </>
+        ) : (
+          <>
+            <div className="section-title">
+              Friend Requests
+              <span className="count">{friendRequests.length}</span>
           </div>
-        )}
 
-        {activeTab === 'requests' && (
-          <div className="requests-list">
             {friendRequests.length > 0 ? (
-              <>
+              <div className="friends-list">
                 {friendRequests.map(request => (
                   <div key={request.id} className="request-item">
                     <div className="friend-avatar">
                       <img src={request.avatar} alt={request.name} />
                     </div>
-                    <div className="request-info">
+                    
+                    <div className="friend-info">
                       <div className="friend-name">{request.name}</div>
                       <div className="mutual-friends">
-                        {request.mutualFriends} mutual {request.mutualFriends === 1 ? 'friend' : 'friends'}
+                        {request.mutualFriends} mutual friend{request.mutualFriends !== 1 ? 's' : ''}
                       </div>
                     </div>
+                    
                     <div className="request-actions">
-                      <button className="accept-btn">Accept</button>
-                      <button className="decline-btn">Decline</button>
+                      <button 
+                        className="accept-btn"
+                        onClick={() => handleAcceptFriendRequest(request.id)}
+                        aria-label={`Accept ${request.name}'s friend request`}
+                      >
+                        <FaCheck />
+                      </button>
+                      <button 
+                        className="decline-btn"
+                        onClick={() => handleDeclineFriendRequest(request.id)}
+                        aria-label={`Decline ${request.name}'s friend request`}
+                      >
+                        <FaTimes />
+                      </button>
                     </div>
                   </div>
                 ))}
-                <div className="view-all-container">
-                  <button className="view-all-btn">
-                    <FaUsers />
-                    <span>View All Requests</span>
+                
+                <div className={`view-all-container ${isCompact ? 'compact-view-all' : ''}`}>
+                  <button className="view-all-btn requests" onClick={handleViewAllRequests}>
+                    <FaUserPlus />
+                    View All Requests
                     <FaChevronRight className="chevron-icon" />
                   </button>
                 </div>
-              </>
+                </div>
             ) : (
               <div className="empty-state">
-                <p>No friend requests</p>
+                <FaUserPlus className="empty-icon" />
+                <p>No pending friend requests</p>
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>

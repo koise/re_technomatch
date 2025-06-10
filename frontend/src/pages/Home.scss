@@ -3604,3 +3604,48 @@ body.sidebar-open {
     }
   }
 }
+
+// Toast Demo Toggle Button
+.toast-demo-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  
+  .toggle-toast-demo-btn {
+    background: linear-gradient(135deg, #9C57FF, #6C5CE7);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(156, 87, 255, 0.4);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(156, 87, 255, 0.5);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .toast-demo-toggle {
+    bottom: 15px;
+    right: 15px;
+    
+    .toggle-toast-demo-btn {
+      padding: 10px 20px;
+      font-size: 0.8rem;
+    }
+  }
+}

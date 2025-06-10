@@ -1,0 +1,297 @@
+@import '../styles/variables.scss';
+@import '../styles/theme.scss';
+
+// Toast demo container
+.toast-demo {
+  width: 100%;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  // Header styling
+  h3 {
+    margin: 0 0 1.5rem;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    text-align: center;
+  }
+
+  h4 {
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+  }
+  
+  // Tab navigation
+  .toast-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    
+    .tab-btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      background: rgba(var(--primary-rgb), 0.1);
+      color: var(--text-primary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(var(--primary-rgb), 0.2);
+      }
+      
+      &.active {
+        background: var(--primary);
+        color: white;
+      }
+    }
+  }
+
+  // Button container
+  .toast-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    
+    // Button groups
+    .button-group {
+      flex: 1;
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+  
+  // Toast buttons
+  .toast-btn {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    
+    &:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+    
+    // Button types
+    &.success {
+      background: linear-gradient(135deg, #2ed573, #1db954);
+      color: white;
+      box-shadow: 0 4px 10px rgba(46, 213, 115, 0.3);
+    }
+    
+    &.error {
+      background: linear-gradient(135deg, #ff4757, #e84118);
+      color: white;
+      box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+    }
+    
+    &.warning {
+      background: linear-gradient(135deg, #ffa502, #ff7f50);
+      color: white;
+      box-shadow: 0 4px 10px rgba(255, 165, 2, 0.3);
+    }
+    
+    &.info {
+      background: linear-gradient(135deg, #1e90ff, #3742fa);
+      color: white;
+      box-shadow: 0 4px 10px rgba(30, 144, 255, 0.3);
+    }
+    
+    &.achievement {
+      background: linear-gradient(135deg, #ffca28, #ff9800);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255, 202, 40, 0.4);
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+        animation: pulse 2s infinite;
+        z-index: 1;
+        pointer-events: none;
+      }
+    }
+    
+    &.level-up {
+      background: linear-gradient(135deg, #8c67ff, #6c5ce7);
+      color: white;
+      box-shadow: 0 4px 15px rgba(140, 103, 255, 0.4);
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+        animation: shine 2s infinite;
+        z-index: 1;
+        pointer-events: none;
+      }
+    }
+    
+    &.reward {
+      background: linear-gradient(135deg, #ff6b81, #ff4757);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255, 107, 129, 0.4);
+      
+      &::after {
+        content: '★';
+        position: absolute;
+        top: -10px;
+        right: -5px;
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.8);
+        transform: rotate(15deg);
+        z-index: 1;
+        pointer-events: none;
+      }
+    }
+    
+    // Notification button types
+    &.notification {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: white;
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+    }
+    
+    &.message {
+      background: linear-gradient(135deg, #9b59b6, #8e44ad);
+      color: white;
+      box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+      
+      &::before {
+        content: '✉';
+        position: absolute;
+        top: -5px;
+        right: 0;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        z-index: 1;
+        pointer-events: none;
+      }
+    }
+    
+    &.friend-request {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: white;
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+    }
+    
+    &.like {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+      
+      &::before {
+        content: '♥';
+        position: absolute;
+        top: -6px;
+        right: -2px;
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        animation: pulse 1.5s infinite;
+        z-index: 1;
+        pointer-events: none;
+      }
+    }
+    
+    &.points {
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      color: white;
+      box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+      
+      &::after {
+        content: '+';
+        position: absolute;
+        top: -5px;
+        right: 0;
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: bold;
+        z-index: 1;
+        pointer-events: none;
+      }
+    }
+    
+    &.news {
+      background: linear-gradient(135deg, #34495e, #2c3e50);
+      color: white;
+      box-shadow: 0 4px 15px rgba(52, 73, 94, 0.4);
+    }
+  }
+}
+
+// Animations
+@keyframes pulse {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .toast-demo {
+    margin: 1rem;
+    padding: 1rem;
+    
+    .toast-tabs {
+      flex-wrap: wrap;
+      
+      .tab-btn {
+        flex: 1;
+        min-width: 100px;
+      }
+    }
+    
+    .toast-buttons {
+      flex-direction: column;
+      gap: 1.5rem;
+      
+      .button-group {
+        min-width: auto;
+      }
+    }
+  }
+} 

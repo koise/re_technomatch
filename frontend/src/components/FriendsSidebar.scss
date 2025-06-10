@@ -1,16 +1,9 @@
 @import '../styles/variables.scss';
+@import '../styles/main.scss';
+@import '../styles/theme.scss';
 
-$theme-red: #FF416C;
-$theme-red-darker: #FF4B2B;
 $sidebar-width: 320px;
 $compact-sidebar-width: 280px;
-$light-bg: #ffffff;
-$light-element: #f8f9fa;
-$light-sec-element: #ebedf0;
-$light-border: rgba(0, 0, 0, 0.06);
-$light-text: #343a40;
-$light-text-sec: rgba(0, 0, 0, 0.6);
-$light-hover: #f0f2f5;
 
 .friends-sidebar {
   position: fixed;
@@ -23,48 +16,31 @@ $light-hover: #f0f2f5;
   flex-direction: column;
   z-index: 90;
   overflow: hidden;
-  transform: translateX(0);
-  opacity: 1;
+  animation: slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
   
-  // Default to no animations if animations are disabled
-  &.no-animation {
-    animation: none !important;
-    transition: none !important;
+  &.slide-out {
+    transform: translateX(100%);
+    opacity: 0;
   }
   
-  // Apply animations when animation class is present
-  &.animated {
-    animation: slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-    
-    &.slide-out {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
-  
-  // Apply compact mode
-  &.compact-mode {
-    width: $compact-sidebar-width;
-  }
-  
-  // Theme styling
+  // Apply theming
   &.dark {
-    background: rgba(30, 25, 28, 0.98);
-    border-left: 1px solid rgba(255, 65, 108, 0.2);
+    background: var(--bg-card);
+    border-left: 1px solid var(--border-accent);
     box-shadow: 
       -5px 0 25px rgba(0, 0, 0, 0.2),
-      0 0 15px rgba(255, 65, 108, 0.2);
-    color: #ffffff;
+      0 0 15px var(--glow-primary);
+    color: var(--text-primary);
   }
   
   &.light {
-    background: rgba(255, 255, 255, 0.98);
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    background: var(--bg-card);
+    border-left: 1px solid var(--border-light);
     box-shadow: 
       -5px 0 25px rgba(0, 0, 0, 0.1),
-      0 0 15px rgba(255, 65, 108, 0.1);
-    color: $light-text;
+      0 0 15px var(--glow-primary);
+    color: var(--text-primary);
   }
   
   .friends-header {
@@ -73,20 +49,13 @@ $light-hover: #f0f2f5;
     justify-content: space-between;
     padding: 1rem;
     transition: padding 0.3s ease;
-    
-    &.dark {
-      border-bottom: 1px solid rgba(255, 65, 108, 0.2);
-    }
-    
-    &.light {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
+    border-bottom: 1px solid var(--border-light);
     
     h3 {
       font-size: 1.2rem;
       font-weight: 600;
       margin: 0;
-      background: linear-gradient(to right, #FF416C, #FF4B2B);
+      background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -97,7 +66,7 @@ $light-hover: #f0f2f5;
       .friends-count {
         margin-left: 0.5rem;
         font-size: 0.75rem;
-        background: rgba(255, 65, 108, 0.2);
+        background: rgba(var(--accent-primary-rgb), 0.2);
         border-radius: 10px;
         padding: 0.1rem 0.5rem;
         color: white;
@@ -105,9 +74,9 @@ $light-hover: #f0f2f5;
         font-weight: 400;
         
         .friends-sidebar.light & {
-          background: rgba(255, 65, 108, 0.15);
-          color: $theme-red;
-          -webkit-text-fill-color: $theme-red;
+          background: rgba(var(--accent-primary-rgb), 0.15);
+          color: var(--accent-primary);
+          -webkit-text-fill-color: var(--accent-primary);
         }
       }
       
@@ -116,7 +85,7 @@ $light-hover: #f0f2f5;
         display: block;
         width: 30px;
         height: 2px;
-        background: linear-gradient(to right, #FF416C, #FF4B2B);
+        background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
         margin-top: 5px;
         transition: width 0.3s ease;
       }
@@ -132,19 +101,12 @@ $light-hover: #f0f2f5;
         display: flex;
         align-items: center;
         gap: 0.25rem;
-        
-        .friends-sidebar.dark & {
-          color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .friends-sidebar.light & {
-          color: rgba(0, 0, 0, 0.6);
-        }
+        color: var(--text-secondary);
         
         .online-indicator {
-          color: #10b981;
+          color: var(--accent-success);
           font-size: 0.6rem;
-          filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.3));
+          filter: drop-shadow(0 0 2px rgba(var(--accent-success-rgb), 0.3));
         }
       }
     }
@@ -160,25 +122,12 @@ $light-hover: #f0f2f5;
       justify-content: center;
       border-radius: 50%;
       transition: all 0.2s ease;
+      color: var(--text-secondary);
       
-      .friends-sidebar.dark & {
-        color: rgba(255, 255, 255, 0.7);
-        
-        &:hover {
-          color: white;
-          background: rgba(255, 65, 108, 0.2);
-          transform: rotate(90deg);
-        }
-      }
-      
-      .friends-sidebar.light & {
-        color: rgba(0, 0, 0, 0.5);
-        
-        &:hover {
-          color: $theme-red;
-          background: rgba(255, 65, 108, 0.1);
-          transform: rotate(90deg);
-        }
+      &:hover {
+        color: var(--text-primary);
+        background: rgba(var(--accent-primary-rgb), 0.2);
+        transform: rotate(90deg);
       }
     }
     
@@ -222,15 +171,7 @@ $light-hover: #f0f2f5;
         left: 10px;
         top: 50%;
         transform: translateY(-50%);
-        
-        .friends-sidebar.dark & {
-          color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .friends-sidebar.light & {
-          color: rgba(0, 0, 0, 0.4);
-        }
-        
+        color: var(--text-tertiary);
         font-size: 0.9rem;
       }
       
@@ -240,43 +181,24 @@ $light-hover: #f0f2f5;
         border-radius: 8px;
         transition: all 0.2s ease;
         font-size: 0.9rem;
+        border: 1px solid var(--border-light);
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
         
-        .friends-sidebar.dark & {
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          background: rgba(255, 255, 255, 0.05);
-          color: white;
-          
-          &::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-          }
-          
-          &:focus {
-            outline: none;
-            border-color: rgba(255, 65, 108, 0.5);
-            box-shadow: 0 0 0 2px rgba(255, 65, 108, 0.2);
-          }
+        &::placeholder {
+          color: var(--text-tertiary);
         }
         
-        .friends-sidebar.light & {
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          background: rgba(0, 0, 0, 0.03);
-          color: $light-text;
-          
-          &::placeholder {
-            color: rgba(0, 0, 0, 0.4);
-          }
-          
-          &:focus {
-            outline: none;
-            border-color: rgba(255, 65, 108, 0.5);
-            box-shadow: 0 0 0 2px rgba(255, 65, 108, 0.1);
-          }
+        &:focus {
+          outline: none;
+          border-color: var(--border-accent);
+          box-shadow: 0 0 0 2px var(--glow-primary);
         }
       }
     }
     
     .add-friend-btn {
-      background: linear-gradient(135deg, $theme-red, $theme-red-darker);
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
       color: white;
       border: none;
       width: 36px;
@@ -287,29 +209,36 @@ $light-hover: #f0f2f5;
       justify-content: center;
       cursor: pointer;
       transition: all 0.2s ease;
-      
-      .friends-sidebar.dark & {
-        box-shadow: 0 2px 8px rgba(255, 65, 108, 0.3);
-      }
-      
-      .friends-sidebar.light & {
-        box-shadow: 0 2px 6px rgba(255, 65, 108, 0.2);
-      }
+      box-shadow: var(--shadow-sm);
       
       &:hover {
         transform: translateY(-2px);
-        
-        .friends-sidebar.dark & {
-          box-shadow: 0 4px 12px rgba(255, 65, 108, 0.4);
-        }
-        
-        .friends-sidebar.light & {
-          box-shadow: 0 4px 10px rgba(255, 65, 108, 0.3);
-        }
+        box-shadow: var(--shadow-md);
       }
       
       &:active {
         transform: translateY(0);
+      }
+    }
+    
+    &.compact-search {
+      padding: 0.5rem 0.75rem;
+      
+      .search-input-wrapper {
+        .search-icon {
+          font-size: 0.8rem;
+        }
+        
+        .search-input {
+          padding: 0.5rem 0.5rem 0.5rem 1.8rem;
+          font-size: 0.8rem;
+        }
+      }
+      
+      .add-friend-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
       }
     }
   }
@@ -331,33 +260,16 @@ $light-hover: #f0f2f5;
       cursor: pointer;
       transition: all 0.2s ease;
       position: relative;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
       
-      .friends-sidebar.dark & {
-        background: rgba(255, 255, 255, 0.05);
-        color: rgba(255, 255, 255, 0.7);
-        
-        &:hover {
-          background: rgba(255, 255, 255, 0.1);
-        }
-        
-        &.active {
-          background: rgba(255, 65, 108, 0.15);
-          color: white;
-        }
+      &:hover {
+        background: var(--bg-item-hover);
       }
       
-      .friends-sidebar.light & {
-        background: rgba(0, 0, 0, 0.03);
-        color: rgba(0, 0, 0, 0.6);
-        
-        &:hover {
-          background: rgba(0, 0, 0, 0.05);
-        }
-        
-        &.active {
-          background: rgba(255, 65, 108, 0.1);
-          color: $theme-red;
-        }
+      &.active {
+        background: rgba(var(--accent-primary-rgb), 0.15);
+        color: var(--accent-primary);
       }
       
       &.active::after {
@@ -367,7 +279,7 @@ $light-hover: #f0f2f5;
         left: 25%;
         right: 25%;
         height: 2px;
-        background: linear-gradient(to right, $theme-red, $theme-red-darker);
+        background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
         border-radius: 1px;
       }
       
@@ -379,15 +291,22 @@ $light-hover: #f0f2f5;
         margin-left: 0.3rem;
         min-width: 18px;
         text-align: center;
+        background: rgba(var(--accent-primary-rgb), 0.2);
+        color: var(--accent-primary);
+      }
+    }
+    
+    &.compact-tabs {
+      padding: 0 0.75rem;
+      margin-bottom: 0.5rem;
+      
+      .tab {
+        padding: 0.5rem 0.4rem;
+        font-size: 0.75rem;
         
-        .friends-sidebar.dark & {
-          background: rgba(255, 65, 108, 0.3);
-          color: white;
-        }
-        
-        .friends-sidebar.light & {
-          background: rgba(255, 65, 108, 0.2);
-          color: $theme-red-darker;
+        .badge {
+          font-size: 0.65rem;
+          padding: 0.05rem 0.3rem;
         }
       }
     }
@@ -408,21 +327,10 @@ $light-hover: #f0f2f5;
     
     &::-webkit-scrollbar-thumb {
       border-radius: 3px;
+      background: var(--border-light);
       
-      .friends-sidebar.dark & {
-        background: rgba(255, 255, 255, 0.1);
-        
-        &:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-      }
-      
-      .friends-sidebar.light & {
-        background: rgba(0, 0, 0, 0.1);
-        
-        &:hover {
-          background: rgba(0, 0, 0, 0.2);
-        }
+      &:hover {
+        background: var(--border-color);
       }
     }
   
@@ -434,16 +342,12 @@ $light-hover: #f0f2f5;
       transition: all 0.2s ease;
       margin-bottom: 0.25rem;
       
-      .friends-sidebar.dark & {
-        &:hover {
-          background: rgba(255, 255, 255, 0.05);
-        }
+      &:hover {
+        background: var(--bg-item-hover);
       }
       
-      .friends-sidebar.light & {
-        &:hover {
-          background: rgba(0, 0, 0, 0.03);
-        }
+      &.compact-item {
+        padding: 0.6rem 0.4rem;
       }
     }
     
@@ -456,13 +360,12 @@ $light-hover: #f0f2f5;
         height: 40px;
         border-radius: 10px;
         object-fit: cover;
+        box-shadow: var(--shadow-sm);
         
-        .friends-sidebar.dark & {
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .friends-sidebar.light & {
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        .compact-item & {
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
         }
       }
       
@@ -477,25 +380,24 @@ $light-hover: #f0f2f5;
         align-items: center;
         justify-content: center;
         font-size: 8px;
-        
-        .friends-sidebar.dark & {
-          border: 2px solid rgba(30, 25, 28, 0.98);
-        }
-        
-        .friends-sidebar.light & {
-          border: 2px solid rgba(255, 255, 255, 0.98);
-        }
+        border: 2px solid var(--bg-card);
         
         &.online {
-          color: #10b981;
+          color: var(--accent-success);
           
           svg {
-            filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.7));
+            filter: drop-shadow(0 0 2px rgba(var(--accent-success-rgb), 0.7));
           }
         }
         
         &.offline {
-          color: #6b7280;
+          color: var(--text-tertiary);
+        }
+        
+        .compact-item & {
+          width: 10px;
+          height: 10px;
+          font-size: 7px;
         }
       }
     }
@@ -507,13 +409,10 @@ $light-hover: #f0f2f5;
         font-size: 0.9rem;
         font-weight: 500;
         margin-bottom: 0.15rem;
+        color: var(--text-primary);
         
-        .friends-sidebar.dark & {
-          color: white;
-        }
-        
-        .friends-sidebar.light & {
-          color: $light-text;
+        .compact-item & {
+          font-size: 0.8rem;
         }
       }
       
@@ -521,19 +420,12 @@ $light-hover: #f0f2f5;
         font-size: 0.75rem;
         display: flex;
         align-items: center;
-        
-        .friends-sidebar.dark & {
-          color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .friends-sidebar.light & {
-          color: rgba(0, 0, 0, 0.5);
-        }
+        color: var(--text-secondary);
         
         .playing {
           display: flex;
           align-items: center;
-          color: $theme-red;
+          color: var(--accent-primary);
           
           svg {
             margin-right: 0.25rem;
@@ -541,23 +433,24 @@ $light-hover: #f0f2f5;
         }
         
         .online {
-          color: #10b981;
+          color: var(--accent-success);
         }
         
         .offline {
-          color: #6b7280;
+          color: var(--text-tertiary);
+        }
+        
+        .compact-item & {
+          font-size: 0.7rem;
         }
       }
       
       .mutual-friends {
         font-size: 0.75rem;
+        color: var(--text-secondary);
         
-        .friends-sidebar.dark & {
-          color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .friends-sidebar.light & {
-          color: rgba(0, 0, 0, 0.5);
+        .compact-item & {
+          font-size: 0.7rem;
         }
       }
     }
@@ -565,6 +458,7 @@ $light-hover: #f0f2f5;
     .friend-actions {
       display: flex;
       gap: 0.5rem;
+      position: relative;
       
       .action-btn {
         border: none;
@@ -577,36 +471,91 @@ $light-hover: #f0f2f5;
         cursor: pointer;
         transition: all 0.2s ease;
         font-size: 0.8rem;
+        background: var(--bg-tertiary);
+        color: var(--text-secondary);
         
-        .friends-sidebar.dark & {
-          background: rgba(255, 255, 255, 0.1);
-          color: rgba(255, 255, 255, 0.7);
+        &:hover {
+          background: rgba(var(--accent-primary-rgb), 0.2);
+          color: var(--accent-primary);
+          transform: translateY(-1px);
+        }
+        
+        .compact-item & {
+          width: 24px;
+          height: 24px;
+          font-size: 0.7rem;
+        }
+      }
+      
+      .friend-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 140px;
+        background: var(--bg-dropdown);
+        border-radius: 8px;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        z-index: 5;
+        border: 1px solid var(--border-light);
+        animation: menuFadeIn 0.2s ease forwards;
+        
+        .menu-btn {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          text-align: left;
+          padding: 0.6rem 0.8rem;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          color: var(--text-primary);
+          font-size: 0.8rem;
           
           &:hover {
-            background: rgba(255, 65, 108, 0.2);
-            color: white;
-            transform: translateY(-1px);
+            background: var(--bg-item-hover);
           }
           
-          &.chat-btn {
-            background: rgba(255, 65, 108, 0.2);
-            color: rgba(255, 255, 255, 0.9);
+          .btn-icon {
+            margin-right: 0.6rem;
+            font-size: 0.85rem;
+          }
+          
+          &.unfriend-btn {
+            color: var(--text-primary);
+            
+            &:hover {
+              .btn-icon {
+                color: var(--accent-primary);
+              }
+            }
+          }
+          
+          &.block-btn {
+            color: var(--text-primary);
+            
+            &:hover {
+              color: var(--accent-danger);
+              
+              .btn-icon {
+                color: var(--accent-danger);
+              }
+            }
           }
         }
         
-        .friends-sidebar.light & {
-          background: rgba(0, 0, 0, 0.05);
-          color: rgba(0, 0, 0, 0.6);
+        .compact-item & {
+          width: 120px;
           
-          &:hover {
-            background: rgba(255, 65, 108, 0.15);
-            color: $theme-red;
-            transform: translateY(-1px);
-          }
-          
-          &.chat-btn {
-            background: rgba(255, 65, 108, 0.15);
-            color: $theme-red;
+          .menu-btn {
+            padding: 0.5rem 0.7rem;
+            font-size: 0.75rem;
+            
+            .btn-icon {
+              font-size: 0.8rem;
+              margin-right: 0.5rem;
+            }
           }
         }
       }
@@ -627,40 +576,28 @@ $light-hover: #f0f2f5;
         transition: all 0.2s ease;
         
         &.accept-btn {
-          background: linear-gradient(135deg, $theme-red, $theme-red-darker);
+          background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
           color: white;
           
           &:hover {
             transform: translateY(-1px);
-            
-            .friends-sidebar.dark & {
-              box-shadow: 0 2px 6px rgba(255, 65, 108, 0.3);
-            }
-            
-            .friends-sidebar.light & {
-              box-shadow: 0 2px 6px rgba(255, 65, 108, 0.2);
-            }
+            box-shadow: var(--shadow-sm);
           }
         }
         
         &.decline-btn {
-          .friends-sidebar.dark & {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.7);
-            
-            &:hover {
-              background: rgba(255, 255, 255, 0.15);
-            }
-          }
+          background: var(--bg-tertiary);
+          color: var(--text-secondary);
           
-          .friends-sidebar.light & {
-            background: rgba(0, 0, 0, 0.05);
-            color: rgba(0, 0, 0, 0.6);
-            
-            &:hover {
-              background: rgba(0, 0, 0, 0.08);
-            }
+          &:hover {
+            background: var(--bg-item-hover);
+            color: var(--text-primary);
           }
+        }
+        
+        .compact-item & {
+          padding: 0.25rem 0.6rem;
+          font-size: 0.7rem;
         }
       }
     }
@@ -682,25 +619,13 @@ $light-hover: #f0f2f5;
         cursor: pointer;
         transition: all 0.2s ease;
         gap: 0.5rem;
+        background: rgba(var(--accent-primary-rgb), 0.15);
+        color: var(--accent-primary);
         
-        .friends-sidebar.dark & {
-          background: rgba(255, 65, 108, 0.15);
-          color: white;
-          
-          &:hover {
-            background: rgba(255, 65, 108, 0.25);
-            transform: translateY(-2px);
-          }
-        }
-        
-        .friends-sidebar.light & {
-          background: rgba(255, 65, 108, 0.1);
-          color: $theme-red;
-          
-          &:hover {
-            background: rgba(255, 65, 108, 0.2);
-            transform: translateY(-2px);
-          }
+        &:hover {
+          background: rgba(var(--accent-primary-rgb), 0.25);
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-sm);
         }
         
         svg {
@@ -710,6 +635,32 @@ $light-hover: #f0f2f5;
         .chevron-icon {
           font-size: 0.7rem;
           margin-left: auto;
+        }
+        
+        &.requests {
+          background: rgba(var(--accent-secondary-rgb), 0.15);
+          color: var(--accent-secondary);
+          
+          &:hover {
+            background: rgba(var(--accent-secondary-rgb), 0.25);
+          }
+        }
+      }
+      
+      &.compact-view-all {
+        padding: 0.4rem;
+        
+        .view-all-btn {
+          padding: 0.5rem;
+          font-size: 0.75rem;
+          
+          svg {
+            font-size: 0.8rem;
+          }
+          
+          .chevron-icon {
+            font-size: 0.6rem;
+          }
         }
       }
     }
@@ -722,131 +673,53 @@ $light-hover: #f0f2f5;
       padding: 2rem 1rem;
       font-size: 0.9rem;
       text-align: center;
-      
-      .friends-sidebar.dark & {
-        color: rgba(255, 255, 255, 0.5);
-      }
-      
-      .friends-sidebar.light & {
-        color: rgba(0, 0, 0, 0.4);
-      }
-    }
-  }
-}
-
-/* Compact mode styling */
-.friends-sidebar.compact-mode {
-  .friends-header {
-    padding: 0.75rem;
-    
-    h3 {
-      font-size: 1rem;
-      
-      &::after {
-        width: 25px;
-      }
-    }
-    
-    .close-btn {
-      font-size: 1rem;
-      padding: 0.4rem;
+      color: var(--text-tertiary);
     }
   }
   
-  .search-container {
-    padding: 0.5rem 0.75rem;
+  // Media queries for responsiveness
+  @media (max-width: 992px) {
+    width: $compact-sidebar-width;
     
-    .search-input-wrapper {
-      .search-icon {
-        font-size: 0.8rem;
-      }
+    .friends-header {
+      padding: 0.75rem;
       
-      .search-input {
-        padding: 0.5rem 0.5rem 0.5rem 1.8rem;
-        font-size: 0.8rem;
-      }
-    }
-    
-    .add-friend-btn {
-      width: 32px;
-      height: 32px;
-      font-size: 0.8rem;
-    }
-  }
-  
-  .tabs {
-    padding: 0 0.75rem;
-    margin-bottom: 0.5rem;
-    
-    .tab {
-      padding: 0.5rem 0.4rem;
-      font-size: 0.75rem;
-      
-      .badge {
-        font-size: 0.65rem;
-        padding: 0.05rem 0.3rem;
-      }
-    }
-  }
-  
-  .friends-content {
-    .friend-item, .request-item {
-      padding: 0.6rem 0.4rem;
-    }
-    
-    .friend-avatar {
-      margin-right: 0.5rem;
-      
-      img {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-      }
-      
-      .status-indicator {
-        width: 10px;
-        height: 10px;
-        font-size: 7px;
-      }
-    }
-    
-    .friend-info, .request-info {
-      .friend-name {
-        font-size: 0.8rem;
-      }
-      
-      .friend-status, .mutual-friends {
-        font-size: 0.7rem;
-      }
-    }
-    
-    .friend-actions {
-      gap: 0.35rem;
-      
-      .action-btn {
-        width: 24px;
-        height: 24px;
-        font-size: 0.7rem;
-      }
-    }
-    
-    .request-actions {
-      gap: 0.25rem;
-      
-      button {
-        padding: 0.25rem 0.6rem;
-        font-size: 0.7rem;
-      }
-    }
-    
-    .view-all-container {
-      .view-all-btn {
-        padding: 0.5rem;
-        font-size: 0.75rem;
+      h3 {
+        font-size: 1rem;
         
-        svg {
-          font-size: 0.8rem;
+        &::after {
+          width: 25px;
         }
+      }
+    }
+    
+    .search-container {
+      padding: 0.5rem 0.75rem;
+    }
+    
+    .tabs {
+      padding: 0 0.75rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    width: 100%;
+    right: 0;
+    left: 0;
+    top: 3rem;
+    height: calc(100vh - 3rem);
+    border-radius: 0;
+    animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    
+    &.slide-out {
+      transform: translateY(100%);
+    }
+    
+    .friends-header {
+      padding: 0.5rem 1rem;
+      
+      h3 {
+        font-size: 0.9rem;
       }
     }
   }
@@ -861,5 +734,27 @@ $light-hover: #f0f2f5;
   to {
     transform: translateX(0);
     opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes menuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 } 

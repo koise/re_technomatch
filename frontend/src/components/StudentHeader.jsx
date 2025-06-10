@@ -36,6 +36,7 @@ import {
   FaSun
 } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme, useSettings } from '../contexts/ThemeContext';
 
 // Enhanced Cookie utility functions
 const setCookie = (name, value, days = 365) => {
@@ -92,7 +93,6 @@ const defaultSettings = {
   notifications: true,
   soundEffects: true,
   animations: true,
-  compactMode: false,
   language: 'en',
   colorAccent: 'red', // Default accent color
   sessionTimeout: 60 // in minutes
@@ -131,13 +131,6 @@ const applyAllSettings = (settings) => {
   // Apply font
   document.body.style.fontFamily = settings.font;
   
-  // Apply compact mode
-  if (settings.compactMode) {
-    document.body.classList.add('compact-mode');
-  } else {
-    document.body.classList.remove('compact-mode');
-  }
-  
   // Apply animations setting
   if (!settings.animations) {
     document.body.classList.add('disable-animations');
@@ -154,18 +147,20 @@ const StudentHeader = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [friendSidebarOpen, setFriendSidebarOpen] = useState(false);
   
+  // Use ThemeContext instead of local state
+  const { theme, toggleTheme } = useTheme();
+  const { settings, updateSetting, resetSettings: resetContextSettings } = useSettings();
+  
   // Initialize settings from cookies or defaults
   const savedSettings = getUserSettings();
   
-  const [theme, setTheme] = useState(savedSettings.theme);
   const [font, setFont] = useState(savedSettings.font);
   const [isOnline, setIsOnline] = useState(savedSettings.onlineStatus);
   const [soundEffects, setSoundEffects] = useState(savedSettings.soundEffects);
   const [showAnimations, setShowAnimations] = useState(savedSettings.animations);
-  const [compactMode, setCompactMode] = useState(savedSettings.compactMode);
   const [colorAccent, setColorAccent] = useState(savedSettings.colorAccent);
   
-  // Keep darkMode state for theming
+  // Keep darkMode state in sync with theme
   const [darkMode, setDarkMode] = useState(theme === 'dark');
 
   // Refs for dropdown elements
@@ -176,39 +171,8 @@ const StudentHeader = () => {
   
   // Apply theme changes to document
   useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
-    
-    // Apply dark/light mode
-    if (darkMode) {
-      document.body.classList.add('dark-mode');
-      document.body.classList.remove('light-mode');
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-      // Add theme class to the body for CSS variables
-      document.body.setAttribute('data-theme', 'dark');
-    } else {
-      document.body.classList.add('light-mode');
-      document.body.classList.remove('dark-mode');
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-      // Add theme class to the body for CSS variables
-      document.body.setAttribute('data-theme', 'light');
-    }
-    
-    // Apply compact mode if enabled
-    if (compactMode) {
-      document.body.classList.add('compact-mode');
-    } else {
-      document.body.classList.remove('compact-mode');
-    }
-    
-    // Apply animations setting - important: use disable-animations class instead of no-animations
-    if (!showAnimations) {
-      document.body.classList.add('disable-animations');
-    } else {
-      document.body.classList.remove('disable-animations');
-    }
-  }, [darkMode, compactMode, showAnimations]);
+    setDarkMode(theme === 'dark');
+  }, [theme]);
   
   // Get user data from auth context or use mock data
   const authContext = useAuth();
@@ -290,13 +254,10 @@ const StudentHeader = () => {
     const settings = getUserSettings();
     
     // Update all state values
-    setTheme(settings.theme);
-    setDarkMode(settings.theme === 'dark');
     setFont(settings.font);
     setIsOnline(settings.onlineStatus);
     setSoundEffects(settings.soundEffects);
     setShowAnimations(settings.animations);
-    setCompactMode(settings.compactMode);
     setColorAccent(settings.colorAccent);
     
     // Apply all settings at once
@@ -305,11 +266,6 @@ const StudentHeader = () => {
     // Log success
     console.log('Settings initialized from cookies:', settings);
   }, []);
-  
-  useEffect(() => {
-    document.body.setAttribute('data-theme', theme);
-    saveUserSettings({ theme });
-  }, [theme]);
   
   useEffect(() => {
     document.body.style.fontFamily = font;
@@ -328,43 +284,10 @@ const StudentHeader = () => {
     saveUserSettings({ animations: showAnimations });
   }, [showAnimations]);
 
-  useEffect(() => {
-    saveUserSettings({ compactMode });
-  }, [compactMode]);
-  
   // Font change handler
   const handleFontChange = (newFont) => {
     setFont(newFont);
     saveUserSettings({ font: newFont });
-  };
-  
-  // Toggle theme function
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    setDarkMode(newTheme === 'dark');
-    
-    // Save setting
-    saveUserSettings({ theme: newTheme });
-    
-    // Apply theme class to the document for CSS variable switching
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-      document.body.classList.add('dark-mode');
-      document.body.classList.remove('light-mode');
-      document.body.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-      document.body.classList.add('light-mode');
-      document.body.classList.remove('dark-mode');
-      document.body.setAttribute('data-theme', 'light');
-    }
-    
-    // Add transition class for smooth changes
-    document.body.classList.add('theme-transition');
-    setTimeout(() => document.body.classList.remove('theme-transition'), 500);
   };
   
   // Toggle online status
@@ -383,70 +306,11 @@ const StudentHeader = () => {
 
   // Toggle animations
   const toggleAnimations = () => {
-    // Handle settings dropdown visibility when toggling animations off
-    if (settingsOpen && showAnimations) {
-      // Only need to handle when turning animations off
-      setTimeout(() => {
-        setSettingsOpen(false);
-        setTimeout(() => {
-          const newValue = !showAnimations;
-          setShowAnimations(newValue);
-          saveUserSettings({ animations: newValue });
-          setTimeout(() => {
-            setSettingsOpen(true);
-          }, 50);
-        }, 50);
-      }, 0);
-    } else {
-      const newValue = !showAnimations;
-      setShowAnimations(newValue);
-      saveUserSettings({ animations: newValue });
-    }
+    const newValue = !showAnimations;
+    setShowAnimations(newValue);
+    saveUserSettings({ animations: newValue });
   };
-
-  // Toggle compact mode
-  const toggleCompactMode = () => {
-    // Add a subtle animation when toggling
-    document.body.classList.add('compact-transition');
-    
-    // Toggle the compact mode state
-    const newValue = !compactMode;
-    setCompactMode(newValue);
-    saveUserSettings({ compactMode: newValue });
-    
-    // Show visual feedback
-    const notification = document.createElement('div');
-    notification.className = `compact-mode-notification ${newValue ? 'enabled' : 'disabled'}`;
-    
-    // Create the inner content HTML (without using React components directly)
-    notification.innerHTML = `
-      <div class="notification-content">
-        <i class="compact-icon"></i>
-        <span>Compact Mode ${newValue ? 'Enabled' : 'Disabled'}</span>
-      </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Create a React icon and render it into the notification
-    const iconContainer = notification.querySelector('.compact-icon');
-    if (iconContainer) {
-      // Use a simple FontAwesome class instead of React component
-      iconContainer.className = 'fas fa-compress compact-icon';
-    }
-    
-    // Remove the notification after animation completes
-    setTimeout(() => {
-      notification.classList.add('fade-out');
-      setTimeout(() => {
-        if (document.body.contains(notification)) {
-          document.body.removeChild(notification);
-        }
-        document.body.classList.remove('compact-transition');
-      }, 500);
-    }, 1500);
-  };
-
+  
   // Simplify the changeColorAccent function since we're removing the feature
   const changeColorAccent = (color) => {
     // Still save the preference but don't apply it visually
@@ -500,14 +364,14 @@ const StudentHeader = () => {
   const unreadNotifications = 3;
   
   const resetSettings = () => {
-    // Reset all settings to defaults
-    setTheme(defaultSettings.theme);
-    setDarkMode(defaultSettings.theme === 'dark');
+    // Reset all settings using context
+    resetContextSettings();
+    
+    // Update local state to match reset settings
     setFont(defaultSettings.font);
     setIsOnline(defaultSettings.onlineStatus);
     setSoundEffects(defaultSettings.soundEffects);
     setShowAnimations(defaultSettings.animations);
-    setCompactMode(defaultSettings.compactMode);
     setColorAccent(defaultSettings.colorAccent);
     
     // Clear the cookie
@@ -515,7 +379,7 @@ const StudentHeader = () => {
     
     // Show a reset notification
     const notification = document.createElement('div');
-    notification.className = 'compact-mode-notification';
+    notification.className = 'settings-notification';
     notification.innerHTML = `
       <div class="notification-content">
         <i class="fas fa-undo notification-icon"></i>
@@ -536,7 +400,7 @@ const StudentHeader = () => {
   };
   
   return (
-    <div className={`student-header ${darkMode ? 'dark' : 'light'}`}>
+    <div className={`student-header ${theme === 'dark' ? 'dark' : 'light'}`}>
       <header className={isScrolled ? 'scrolled' : ''}>
         <div className="header-container">
           <div className="header-content">
@@ -828,23 +692,6 @@ const StudentHeader = () => {
                       
                       <div className="settings-option">
                         <span>
-                          <FaCompress className="settings-icon" />
-                          Compact Mode
-                        </span>
-                        <button 
-                          className={`toggle-btn ${compactMode ? 'active' : ''}`}
-                          onClick={toggleCompactMode}
-                          aria-pressed={compactMode}
-                          role="switch"
-                        >
-                          <span className="toggle-track">
-                            <span className="toggle-thumb"></span>
-                          </span>
-                        </button>
-                      </div>
-                      
-                      <div className="settings-option">
-                        <span>
                           <FaSpinner className="settings-icon" />
                           Animations
                         </span>
@@ -961,7 +808,7 @@ const StudentHeader = () => {
                   {profileOpen && (
                     <div 
                       id="profile-dropdown"
-                      className={`dropdown-menu profile-dropdown game-card ${compactMode ? 'ultra-compact-profile' : ''}`}
+                      className="dropdown-menu profile-dropdown game-card"
                       ref={profileDropdownRef}
                       style={{
                         display: 'block',
@@ -976,7 +823,7 @@ const StudentHeader = () => {
                       aria-label="User profile"
                     >
                       <div className="dropdown-header">
-                        <h3><FaUser className="header-icon" /> {compactMode ? 'Profile' : 'My Profile'}</h3>
+                        <h3><FaUser className="header-icon" /> My Profile</h3>
                         <div className="dropdown-glint"></div>
                       </div>
                       

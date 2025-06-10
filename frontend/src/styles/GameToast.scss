@@ -1,0 +1,851 @@
+@import './variables.scss';
+@import './theme.scss';
+
+/* Primary colors for different toast types */
+$toast-success-color: #2ed573;
+$toast-success-r: 46;
+$toast-success-g: 213;
+$toast-success-b: 115;
+
+$toast-error-color: #ff4757;
+$toast-error-r: 255;
+$toast-error-g: 71;
+$toast-error-b: 87;
+
+$toast-warning-color: #ffa502;
+$toast-warning-r: 255;
+$toast-warning-g: 165;
+$toast-warning-b: 2;
+
+$toast-info-color: #1e90ff;
+$toast-info-r: 30;
+$toast-info-g: 144;
+$toast-info-b: 255;
+
+$toast-achievement-color: #ffca28;
+$toast-achievement-r: 255;
+$toast-achievement-g: 202;
+$toast-achievement-b: 40;
+
+$toast-level-up-color: #8c67ff;
+$toast-level-up-r: 140;
+$toast-level-up-g: 103;
+$toast-level-up-b: 255;
+
+$toast-reward-color: #ff6b81;
+$toast-reward-r: 255;
+$toast-reward-g: 107;
+$toast-reward-b: 129;
+
+/* Notification toast colors */
+$toast-notification-color: #3498db;
+$toast-notification-r: 52;
+$toast-notification-g: 152;
+$toast-notification-b: 219;
+
+$toast-message-color: #9b59b6;
+$toast-message-r: 155;
+$toast-message-g: 89;
+$toast-message-b: 182;
+
+$toast-friend-request-color: #2ecc71;
+$toast-friend-request-r: 46;
+$toast-friend-request-g: 204;
+$toast-friend-request-b: 113;
+
+$toast-like-color: #e74c3c;
+$toast-like-r: 231;
+$toast-like-g: 76;
+$toast-like-b: 60;
+
+$toast-points-color: #f39c12;
+$toast-points-r: 243;
+$toast-points-g: 156;
+$toast-points-b: 18;
+
+$toast-news-color: #34495e;
+$toast-news-r: 52;
+$toast-news-g: 73;
+$toast-news-b: 94;
+
+/* Override Toastify Container */
+.Toastify__toast-container {
+  &.Toastify__toast-container--top-right {
+    top: 1rem;
+    right: 1rem;
+  }
+  
+  &.Toastify__toast-container--bottom-left {
+    bottom: 1rem;
+    left: 1rem;
+  }
+}
+
+/* Main Toast Container */
+.game-toast-container {
+  padding: 0 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  margin-bottom: 1rem !important;
+  min-height: auto !important;
+
+  &.achievement {
+    box-shadow: 0 0 20px rgba($toast-achievement-color, 0.4) !important;
+    animation: pulse-achievement 2s infinite !important;
+  }
+
+  &.level-up {
+    box-shadow: 0 0 20px rgba($toast-level-up-color, 0.4) !important;
+    animation: pulse-level-up 2s infinite !important;
+  }
+
+  &.reward {
+    box-shadow: 0 0 20px rgba($toast-reward-color, 0.4) !important;
+    animation: pulse-reward 2s infinite !important;
+  }
+  
+  &.message {
+    box-shadow: 0 0 15px rgba($toast-message-color, 0.3) !important;
+  }
+  
+  &.friend-request {
+    box-shadow: 0 0 15px rgba($toast-friend-request-color, 0.3) !important;
+  }
+  
+  &.like {
+    box-shadow: 0 0 15px rgba($toast-like-color, 0.3) !important;
+  }
+}
+
+/* Toast Close Button */
+.Toastify__close-button {
+  color: rgba(255, 255, 255, 0.7);
+  opacity: 0.7;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: white;
+    opacity: 1;
+  }
+
+  body.light & {
+    color: rgba(0, 0, 0, 0.7);
+    
+    &:hover {
+      color: black;
+    }
+  }
+}
+
+/* Base Game Toast Styles */
+.game-toast {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  padding: 16px;
+  background: rgba(30, 30, 40, 0.95);
+  backdrop-filter: blur(8px);
+  border-left: 4px solid transparent;
+  
+  body.light & {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .toast-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .toast-icon-container {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.1);
+    
+    body.light & {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+  
+  .toast-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  
+  .toast-icon {
+    font-size: 1.1rem;
+    
+    &.success {
+      color: $toast-success-color;
+    }
+    
+    &.error {
+      color: $toast-error-color;
+    }
+    
+    &.warning {
+      color: $toast-warning-color;
+    }
+    
+    &.info {
+      color: $toast-info-color;
+    }
+    
+    &.achievement {
+      color: $toast-achievement-color;
+      filter: drop-shadow(0 0 3px rgba($toast-achievement-color, 0.5));
+    }
+    
+    &.level-up {
+      color: $toast-level-up-color;
+      filter: drop-shadow(0 0 3px rgba($toast-level-up-color, 0.5));
+    }
+    
+    &.reward {
+      color: $toast-reward-color;
+      filter: drop-shadow(0 0 3px rgba($toast-reward-color, 0.5));
+    }
+    
+    &.notification {
+      color: $toast-notification-color;
+    }
+    
+    &.message {
+      color: $toast-message-color;
+    }
+    
+    &.friend-request {
+      color: $toast-friend-request-color;
+    }
+    
+    &.like {
+      color: $toast-like-color;
+    }
+    
+    &.points {
+      color: $toast-points-color;
+    }
+    
+    &.news {
+      color: $toast-news-color;
+    }
+  }
+  
+  .toast-text {
+    flex: 1;
+    
+    h4 {
+      margin: 0 0 4px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      
+      body.light & {
+        color: #333;
+      }
+    }
+    
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.9);
+      
+      body.light & {
+        color: rgba(0, 0, 0, 0.7);
+      }
+    }
+  }
+  
+  .toast-rewards {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    
+    .toast-points {
+      background: rgba($toast-level-up-color, 0.2);
+      color: $toast-level-up-color;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .toast-reward {
+      background: rgba($toast-reward-color, 0.2);
+      color: $toast-reward-color;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  }
+  
+  .toast-action {
+    margin-top: 8px;
+    
+    .action-button {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+      
+      body.light & {
+        background: rgba(0, 0, 0, 0.1);
+        color: #333;
+        
+        &:hover {
+          background: rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
+  
+  /* Toast types */
+  &.success {
+    border-left-color: $toast-success-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-success-r, $toast-success-g, $toast-success-b, 0.1), transparent);
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-success-r, $toast-success-g, $toast-success-b, 0.15);
+    }
+  }
+  
+  &.error {
+    border-left-color: $toast-error-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-error-r, $toast-error-g, $toast-error-b, 0.1), transparent);
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-error-r, $toast-error-g, $toast-error-b, 0.15);
+    }
+  }
+  
+  &.warning {
+    border-left-color: $toast-warning-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-warning-r, $toast-warning-g, $toast-warning-b, 0.1), transparent);
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-warning-r, $toast-warning-g, $toast-warning-b, 0.15);
+    }
+  }
+  
+  &.info {
+    border-left-color: $toast-info-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-info-r, $toast-info-g, $toast-info-b, 0.1), transparent);
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-info-r, $toast-info-g, $toast-info-b, 0.15);
+    }
+  }
+  
+  &.achievement {
+    border-left-color: $toast-achievement-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-achievement-r, $toast-achievement-g, $toast-achievement-b, 0.15), transparent);
+      animation: shine 2s infinite;
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-achievement-r, $toast-achievement-g, $toast-achievement-b, 0.2);
+      animation: rotate 4s linear infinite;
+    }
+    
+    h4 {
+      background: linear-gradient(90deg, $toast-achievement-color, lighten($toast-achievement-color, 20%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+  
+  &.level-up {
+    border-left-color: $toast-level-up-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-level-up-r, $toast-level-up-g, $toast-level-up-b, 0.15), transparent);
+      animation: shine 2s infinite;
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-level-up-r, $toast-level-up-g, $toast-level-up-b, 0.2);
+      animation: bounce 1s infinite;
+    }
+    
+    h4 {
+      background: linear-gradient(90deg, $toast-level-up-color, lighten($toast-level-up-color, 20%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+  
+  &.reward {
+    border-left-color: $toast-reward-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-reward-r, $toast-reward-g, $toast-reward-b, 0.15), transparent);
+      animation: shine 2s infinite;
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-reward-r, $toast-reward-g, $toast-reward-b, 0.2);
+      animation: spin 3s infinite;
+    }
+    
+    h4 {
+      background: linear-gradient(90deg, $toast-reward-color, lighten($toast-reward-color, 20%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+  
+  /* Notification types */
+  &.notification {
+    border-left-color: $toast-notification-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-notification-r, $toast-notification-g, $toast-notification-b, 0.1), transparent);
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-notification-r, $toast-notification-g, $toast-notification-b, 0.15);
+    }
+  }
+  
+  &.message {
+    border-left-color: $toast-message-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-message-r, $toast-message-g, $toast-message-b, 0.1), transparent);
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-message-r, $toast-message-g, $toast-message-b, 0.15);
+    }
+  }
+  
+  &.friend-request {
+    border-left-color: $toast-friend-request-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-friend-request-r, $toast-friend-request-g, $toast-friend-request-b, 0.1), transparent);
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-friend-request-r, $toast-friend-request-g, $toast-friend-request-b, 0.15);
+    }
+    
+    .action-button {
+      background: rgba($toast-friend-request-r, $toast-friend-request-g, $toast-friend-request-b, 0.4);
+      
+      &:hover {
+        background: rgba($toast-friend-request-r, $toast-friend-request-g, $toast-friend-request-b, 0.6);
+      }
+    }
+  }
+  
+  &.like {
+    border-left-color: $toast-like-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-like-r, $toast-like-g, $toast-like-b, 0.1), transparent);
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-like-r, $toast-like-g, $toast-like-b, 0.15);
+    }
+    
+    .toast-icon {
+      animation: heartbeat 1.2s ease infinite;
+    }
+  }
+  
+  &.points {
+    border-left-color: $toast-points-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-points-r, $toast-points-g, $toast-points-b, 0.1), transparent);
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-points-r, $toast-points-g, $toast-points-b, 0.15);
+    }
+    
+    .toast-points {
+      background: rgba($toast-points-r, $toast-points-g, $toast-points-b, 0.2);
+      color: $toast-points-color;
+    }
+  }
+  
+  &.news {
+    border-left-color: $toast-news-color;
+    
+    &::before {
+      background: linear-gradient(135deg, rgba($toast-news-r, $toast-news-g, $toast-news-b, 0.1), transparent);
+    }
+    
+    .toast-icon-container {
+      background: rgba($toast-news-r, $toast-news-g, $toast-news-b, 0.15);
+    }
+  }
+  
+  /* Decorative gradient overlay */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+    pointer-events: none;
+  }
+  
+  /* Progress bar styling */
+  .toast-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    
+    body.light & {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+}
+
+/* Progress bar animation */
+.Toastify__progress-bar {
+  height: 3px !important;
+  
+  &.success {
+    background: linear-gradient(to right, $toast-success-color, lighten($toast-success-color, 20%)) !important;
+  }
+  
+  &.error {
+    background: linear-gradient(to right, $toast-error-color, lighten($toast-error-color, 20%)) !important;
+  }
+  
+  &.warning {
+    background: linear-gradient(to right, $toast-warning-color, lighten($toast-warning-color, 20%)) !important;
+  }
+  
+  &.info {
+    background: linear-gradient(to right, $toast-info-color, lighten($toast-info-color, 20%)) !important;
+  }
+  
+  &.achievement {
+    background: linear-gradient(to right, $toast-achievement-color, lighten($toast-achievement-color, 20%)) !important;
+    box-shadow: 0 0 10px rgba($toast-achievement-r, $toast-achievement-g, $toast-achievement-b, 0.5) !important;
+  }
+  
+  &.level-up {
+    background: linear-gradient(to right, $toast-level-up-color, lighten($toast-level-up-color, 20%)) !important;
+    box-shadow: 0 0 10px rgba($toast-level-up-r, $toast-level-up-g, $toast-level-up-b, 0.5) !important;
+  }
+  
+  &.reward {
+    background: linear-gradient(to right, $toast-reward-color, lighten($toast-reward-color, 20%)) !important;
+    box-shadow: 0 0 10px rgba($toast-reward-r, $toast-reward-g, $toast-reward-b, 0.5) !important;
+  }
+  
+  &.notification {
+    background: linear-gradient(to right, $toast-notification-color, lighten($toast-notification-color, 20%)) !important;
+  }
+  
+  &.message {
+    background: linear-gradient(to right, $toast-message-color, lighten($toast-message-color, 20%)) !important;
+  }
+  
+  &.friend-request {
+    background: linear-gradient(to right, $toast-friend-request-color, lighten($toast-friend-request-color, 20%)) !important;
+  }
+  
+  &.like {
+    background: linear-gradient(to right, $toast-like-color, lighten($toast-like-color, 20%)) !important;
+  }
+  
+  &.points {
+    background: linear-gradient(to right, $toast-points-color, lighten($toast-points-color, 20%)) !important;
+  }
+  
+  &.news {
+    background: linear-gradient(to right, $toast-news-color, lighten($toast-news-color, 20%)) !important;
+  }
+}
+
+/* Animations */
+@keyframes pulse-achievement {
+  0% {
+    box-shadow: 0 0 15px rgba($toast-achievement-r, $toast-achievement-g, $toast-achievement-b, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba($toast-achievement-r, $toast-achievement-g, $toast-achievement-b, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba($toast-achievement-r, $toast-achievement-g, $toast-achievement-b, 0.3);
+  }
+}
+
+@keyframes pulse-level-up {
+  0% {
+    box-shadow: 0 0 15px rgba($toast-level-up-r, $toast-level-up-g, $toast-level-up-b, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba($toast-level-up-r, $toast-level-up-g, $toast-level-up-b, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba($toast-level-up-r, $toast-level-up-g, $toast-level-up-b, 0.3);
+  }
+}
+
+@keyframes pulse-reward {
+  0% {
+    box-shadow: 0 0 15px rgba($toast-reward-r, $toast-reward-g, $toast-reward-b, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba($toast-reward-r, $toast-reward-g, $toast-reward-b, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba($toast-reward-r, $toast-reward-g, $toast-reward-b, 0.3);
+  }
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.3);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.3);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+/* Toast Animation Overrides */
+.Toastify__toast {
+  &--success {
+    animation: toast-in-left 0.3s !important;
+  }
+  
+  &--error {
+    animation: toast-in-left-bounce 0.5s !important;
+  }
+  
+  &--warning {
+    animation: toast-in-left-slide 0.4s !important;
+  }
+  
+  &--info {
+    animation: toast-in-left 0.3s !important;
+  }
+  
+  &.achievement {
+    animation: toast-in-achievement-left 0.7s !important;
+  }
+  
+  &.level-up {
+    animation: toast-in-level-up-left 0.7s !important;
+  }
+  
+  &.reward {
+    animation: toast-in-reward-left 0.6s !important;
+  }
+}
+
+/* Update animations for left side */
+@keyframes toast-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-in-left-bounce {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  70% {
+    transform: translateX(5%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-in-left-slide {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  30% {
+    transform: translateX(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-in-achievement-left {
+  0% {
+    transform: translateX(-100%) scale(0.8);
+    opacity: 0;
+  }
+  40% {
+    transform: translateX(0) scale(1.1);
+    opacity: 1;
+  }
+  60% {
+    transform: translateX(0) scale(0.9);
+    opacity: 1;
+  }
+  80% {
+    transform: translateX(0) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-in-level-up-left {
+  0% {
+    transform: translateX(-100%) translateY(20px);
+    opacity: 0;
+  }
+  40% {
+    transform: translateX(0) translateY(-15px);
+    opacity: 1;
+  }
+  70% {
+    transform: translateX(0) translateY(10px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-in-reward-left {
+  0% {
+    transform: translateX(-100%) rotate(10deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(0) rotate(-5deg);
+    opacity: 1;
+  }
+  80% {
+    transform: translateX(0) rotate(3deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+  }
+} 
