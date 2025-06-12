@@ -1,48 +1,28 @@
 // src/App.jsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { ToastProvider } from './contexts/ToastContext';
+import { BrowserRouter as Router, useRoutes } from 'react-router-dom';
 import RouteGuard from './RouteGuard';
 import { routes } from './routes';
 import './styles/main.scss';
-import Home from './pages/Home';
+
+// Create a component that uses the useRoutes hook to handle routes
+const AppRoutes = () => {
+  // Transform our flat routes into the format needed for useRoutes
+  const routeElements = routes.map(route => ({
+    path: route.path,
+    element: <RouteGuard route={route} />
+  }));
+
+  return useRoutes(routeElements);
+};
 
 const App = () => {
-  console.log('App component rendering');
+  console.log('App component rendering with consolidated routes');
   
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <ToastProvider>
-          <Router>
-            <Routes>
-            {/* Direct route for home page */}
-            <Route
-              path="/"
-              element={<Home />}
-            />
-            
-            {/* Other routes using the RouteGuard */}
-            {routes.map((route, index) => (
-              <Route key={index} element={<RouteGuard route={route} />}>
-                {route.children && route.children.map((childRoute, childIndex) => (
-                  childRoute.path !== '/' && (
-                    <Route
-                      key={childIndex}
-                      path={childRoute.path}
-                      element={<RouteGuard route={childRoute} />}
-                    />
-                  )
-                ))}
-              </Route>
-            ))}
-          </Routes>
-          </Router>
-        </ToastProvider>
-      </ThemeProvider>
-    </AuthProvider>
+    <Router>
+      <AppRoutes />
+    </Router>
   );
 };
 

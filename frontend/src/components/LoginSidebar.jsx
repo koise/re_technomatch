@@ -6,7 +6,16 @@ import {
   faEnvelope,
   faLock,
   faRightToBracket,
-  faUserPlus
+  faUserPlus,
+  faChalkboardTeacher,
+  faUserShield,
+  faGraduationCap,
+  faDashboard,
+  faHome,
+  faBook,
+  faCalendar,
+  faUsers,
+  faCog
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
@@ -19,7 +28,7 @@ const MOCK_USERS = [
   { username: 'professor', email: 'professor@example.com', password: 'password123', role: 'professor' }
 ];
 
-const LoginSidebar = ({ isOpen, onClose }) => {
+const LoginSidebar = ({ isOpen, onClose, userRole = 'guest' }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -27,7 +36,7 @@ const LoginSidebar = ({ isOpen, onClose }) => {
   const [error, setError] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout, isAuthenticated } = useAuth();
   
   // Check for dark mode on mount and when theme changes
   useEffect(() => {
@@ -156,10 +165,311 @@ const LoginSidebar = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    onClose();
+    navigate('/');
+  };
+
+  // Render login form for guests
+  const renderLoginForm = () => (
+    <div className="login-content">
+      <div className="login-header">
+        <h2>Welcome back</h2>
+        <p style={{ color: darkMode ? 'var(--dark-text-secondary)' : 'var(--light-text-secondary)' }}>
+          Sign in to continue your coding journey
+        </p>
+      </div>
+      
+      <form onSubmit={handleSubmit}>
+        {error && <div className="error-message">{error}</div>}
+        
+        <div className="form-group">
+          <label 
+            htmlFor="identifier"
+            style={{ color: darkMode ? 'var(--dark-text)' : 'var(--light-text)' }}
+          >
+            Email or Username
+          </label>
+          <div className="input-with-icon">
+            <FontAwesomeIcon 
+              icon={faEnvelope} 
+              className="input-icon" 
+              style={{
+                color: darkMode ? 'var(--dark-text-secondary)' : 'var(--light-text-secondary)'
+              }}
+            />
+            <input
+              type="text"
+              id="identifier"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="your@email.com or username"
+              required
+              style={{
+                backgroundColor: darkMode ? 'var(--dark-bg)' : 'var(--light-bg)',
+                color: darkMode ? 'var(--dark-text)' : 'var(--light-text)',
+                borderColor: darkMode ? 'var(--dark-border)' : 'var(--light-border)'
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="form-group">
+          <div className="password-header">
+            <label 
+              htmlFor="password"
+              style={{ color: darkMode ? 'var(--dark-text)' : 'var(--light-text)' }}
+            >
+              Password
+            </label>
+            <Link 
+              to="/forgot-password" 
+              className="forgot-password"
+              style={{ color: 'var(--primary-color)' }}
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <div className="input-with-icon">
+            <FontAwesomeIcon 
+              icon={faLock} 
+              className="input-icon"
+              style={{
+                color: darkMode ? 'var(--dark-text-secondary)' : 'var(--light-text-secondary)'
+              }}
+            />
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              style={{
+                backgroundColor: darkMode ? 'var(--dark-bg)' : 'var(--light-bg)',
+                color: darkMode ? 'var(--dark-text)' : 'var(--light-text)',
+                borderColor: darkMode ? 'var(--dark-border)' : 'var(--light-border)'
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="form-group checkbox-group">
+          <label 
+            className="checkbox-container"
+            style={{ color: darkMode ? 'var(--dark-text)' : 'var(--light-text)' }}
+          >
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            <span 
+              className="checkmark"
+              style={{
+                backgroundColor: rememberMe ? 'var(--primary-color)' : (darkMode ? 'var(--dark-bg)' : 'var(--light-bg)'),
+                borderColor: rememberMe ? 'var(--primary-color)' : (darkMode ? 'var(--dark-border)' : 'var(--light-border)')
+              }}
+            ></span>
+            Remember me
+          </label>
+        </div>
+        
+        <button 
+          type="submit" 
+          className={`login-button ${isLoading ? 'loading' : ''}`}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <div className="loader"></div>
+          ) : (
+            <>
+              <FontAwesomeIcon icon={faRightToBracket} />
+              <span>Sign In</span>
+            </>
+          )}
+        </button>
+      </form>
+      
+      <div className="signup-prompt">
+        <p style={{ color: darkMode ? 'var(--dark-text-secondary)' : 'var(--light-text-secondary)' }}>
+          Don't have an account?
+        </p>
+        <Link 
+          to="/signup/credentials" 
+          className="signup-link"
+          style={{ color: 'var(--primary-color)' }}
+        >
+          <FontAwesomeIcon icon={faUserPlus} />
+          <span>Create Account</span>
+        </Link>
+      </div>
+    </div>
+  );
+
+  // Render student dashboard sidebar
+  const renderStudentSidebar = () => (
+    <div className="dashboard-sidebar-content">
+      <div className="user-profile">
+        <div className="avatar">
+          <FontAwesomeIcon icon={faGraduationCap} />
+        </div>
+        <div className="user-info">
+          <h3>Student Dashboard</h3>
+          <p>Welcome back, Student</p>
+        </div>
+      </div>
+
+      <nav className="dashboard-nav">
+        <ul>
+          <li>
+            <Link to="/dashboard" onClick={onClose}>
+              <FontAwesomeIcon icon={faDashboard} />
+              <span>Dashboard</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/challenges" onClick={onClose}>
+              <FontAwesomeIcon icon={faBook} />
+              <span>Challenges</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/competitions" onClick={onClose}>
+              <FontAwesomeIcon icon={faTrophy} />
+              <span>Competitions</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/settings" onClick={onClose}>
+              <FontAwesomeIcon icon={faCog} />
+              <span>Settings</span>
+            </Link>
+          </li>
+        </ul>
+      </nav>
+
+      <button className="logout-button" onClick={handleLogout}>
+        <FontAwesomeIcon icon={faRightToBracket} />
+        <span>Logout</span>
+      </button>
+    </div>
+  );
+
+  // Render professor dashboard sidebar
+  const renderProfessorSidebar = () => (
+    <div className="dashboard-sidebar-content">
+      <div className="user-profile">
+        <div className="avatar">
+          <FontAwesomeIcon icon={faChalkboardTeacher} />
+        </div>
+        <div className="user-info">
+          <h3>Professor Dashboard</h3>
+          <p>Welcome back, Professor</p>
+        </div>
+      </div>
+
+      <nav className="dashboard-nav">
+        <ul>
+          <li>
+            <Link to="/professor/dashboard" onClick={onClose}>
+              <FontAwesomeIcon icon={faDashboard} />
+              <span>Dashboard</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/professor/courses" onClick={onClose}>
+              <FontAwesomeIcon icon={faBook} />
+              <span>Courses</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/professor/students" onClick={onClose}>
+              <FontAwesomeIcon icon={faUsers} />
+              <span>Students</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/professor/settings" onClick={onClose}>
+              <FontAwesomeIcon icon={faCog} />
+              <span>Settings</span>
+            </Link>
+          </li>
+        </ul>
+      </nav>
+
+      <button className="logout-button" onClick={handleLogout}>
+        <FontAwesomeIcon icon={faRightToBracket} />
+        <span>Logout</span>
+      </button>
+    </div>
+  );
+
+  // Render admin dashboard sidebar
+  const renderAdminSidebar = () => (
+    <div className="dashboard-sidebar-content">
+      <div className="user-profile">
+        <div className="avatar">
+          <FontAwesomeIcon icon={faUserShield} />
+        </div>
+        <div className="user-info">
+          <h3>Admin Dashboard</h3>
+          <p>Welcome back, Admin</p>
+        </div>
+      </div>
+
+      <nav className="dashboard-nav">
+        <ul>
+          <li>
+            <Link to="/admin/dashboard" onClick={onClose}>
+              <FontAwesomeIcon icon={faDashboard} />
+              <span>Dashboard</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/admin/users" onClick={onClose}>
+              <FontAwesomeIcon icon={faUsers} />
+              <span>Users</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/admin/settings" onClick={onClose}>
+              <FontAwesomeIcon icon={faCog} />
+              <span>Settings</span>
+            </Link>
+          </li>
+        </ul>
+      </nav>
+
+      <button className="logout-button" onClick={handleLogout}>
+        <FontAwesomeIcon icon={faRightToBracket} />
+        <span>Logout</span>
+      </button>
+    </div>
+  );
+
+  // Render content based on user role
+  const renderContent = () => {
+    if (isAuthenticated) {
+      switch (userRole) {
+        case 'student':
+          return renderStudentSidebar();
+        case 'professor':
+          return renderProfessorSidebar();
+        case 'admin':
+          return renderAdminSidebar();
+        default:
+          return renderLoginForm();
+      }
+    }
+    return renderLoginForm();
+  };
+
   return (
     <div className={`login-sidebar-overlay ${isOpen ? 'open' : ''} ${darkMode ? 'dark' : 'light'}`} onClick={onClose}>
       <div 
-        className={`login-sidebar ${darkMode ? 'dark' : 'light'}`} 
+        className={`login-sidebar ${darkMode ? 'dark' : 'light'} responsive ${userRole !== 'guest' ? 'dashboard-mode' : ''}`} 
         onClick={(e) => e.stopPropagation()}
         style={{
           backgroundColor: darkMode ? 'var(--dark-bg-secondary)' : 'var(--light-bg-secondary)',
@@ -177,139 +487,7 @@ const LoginSidebar = ({ isOpen, onClose }) => {
           <FontAwesomeIcon icon={faXmark} />
         </button>
         
-        <div className="login-content">
-          <div className="login-header">
-            <h2>Welcome back</h2>
-            <p style={{ color: darkMode ? 'var(--dark-text-secondary)' : 'var(--light-text-secondary)' }}>
-              Sign in to continue your coding journey
-            </p>
-          </div>
-          
-          <form onSubmit={handleSubmit}>
-            {error && <div className="error-message">{error}</div>}
-            
-            <div className="form-group">
-              <label 
-                htmlFor="identifier"
-                style={{ color: darkMode ? 'var(--dark-text)' : 'var(--light-text)' }}
-              >
-                Email or Username
-              </label>
-              <div className="input-with-icon">
-                <FontAwesomeIcon 
-                  icon={faEnvelope} 
-                  className="input-icon" 
-                  style={{
-                    color: darkMode ? 'var(--dark-text-secondary)' : 'var(--light-text-secondary)'
-                  }}
-                />
-                <input
-                  type="text"
-                  id="identifier"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="your@email.com or username"
-                  required
-                  style={{
-                    backgroundColor: darkMode ? 'var(--dark-bg)' : 'var(--light-bg)',
-                    color: darkMode ? 'var(--dark-text)' : 'var(--light-text)',
-                    borderColor: darkMode ? 'var(--dark-border)' : 'var(--light-border)'
-                  }}
-                />
-              </div>
-            </div>
-            
-            <div className="form-group">
-              <div className="password-header">
-                <label 
-                  htmlFor="password"
-                  style={{ color: darkMode ? 'var(--dark-text)' : 'var(--light-text)' }}
-                >
-                  Password
-                </label>
-                <Link 
-                  to="/forgot-password" 
-                  className="forgot-password"
-                  style={{ color: 'var(--primary-color)' }}
-                >
-                  Forgot password?
-                </Link>
-              </div>
-              <div className="input-with-icon">
-                <FontAwesomeIcon 
-                  icon={faLock} 
-                  className="input-icon"
-                  style={{
-                    color: darkMode ? 'var(--dark-text-secondary)' : 'var(--light-text-secondary)'
-                  }}
-                />
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  style={{
-                    backgroundColor: darkMode ? 'var(--dark-bg)' : 'var(--light-bg)',
-                    color: darkMode ? 'var(--dark-text)' : 'var(--light-text)',
-                    borderColor: darkMode ? 'var(--dark-border)' : 'var(--light-border)'
-                  }}
-                />
-              </div>
-            </div>
-            
-            <div className="form-group checkbox-group">
-              <label 
-                className="checkbox-container"
-                style={{ color: darkMode ? 'var(--dark-text)' : 'var(--light-text)' }}
-              >
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                />
-                <span 
-                  className="checkmark"
-                  style={{
-                    backgroundColor: rememberMe ? 'var(--primary-color)' : (darkMode ? 'var(--dark-bg)' : 'var(--light-bg)'),
-                    borderColor: rememberMe ? 'var(--primary-color)' : (darkMode ? 'var(--dark-border)' : 'var(--light-border)')
-                  }}
-                ></span>
-                Remember me
-              </label>
-            </div>
-            
-            <button 
-              type="submit" 
-              className={`login-button ${isLoading ? 'loading' : ''}`}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="loader"></div>
-              ) : (
-                <>
-                  <FontAwesomeIcon icon={faRightToBracket} />
-                  <span>Sign In</span>
-                </>
-              )}
-            </button>
-          </form>
-          
-          <div className="signup-prompt">
-            <p style={{ color: darkMode ? 'var(--dark-text-secondary)' : 'var(--light-text-secondary)' }}>
-              Don't have an account?
-            </p>
-            <Link 
-              to="/signup/credentials" 
-              className="signup-link"
-              style={{ color: 'var(--primary-color)' }}
-            >
-              <FontAwesomeIcon icon={faUserPlus} />
-              <span>Create Account</span>
-            </Link>
-          </div>
-        </div>
+        {renderContent()}
       </div>
     </div>
   );

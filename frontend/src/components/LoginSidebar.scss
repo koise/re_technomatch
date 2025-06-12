@@ -32,7 +32,7 @@
 }
 
 .login-sidebar {
-  width: 400px;
+  width: 300px;
   max-width: 90vw;
   height: 100%;
   padding: 2rem;
@@ -46,6 +46,14 @@
   display: flex;
   flex-direction: column;
   
+  @media (min-width: 1200px) {
+    width: 550px;
+  }
+  
+  @media (min-width: 1600px) {
+    width: 600px;
+  }
+  
   &.dark, &.light {
     .login-header h2 {
       background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
@@ -56,6 +64,16 @@
     
     .login-button {
       background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    }
+  }
+
+  &.dashboard-mode {
+    @media (min-width: 1200px) {
+      width: 400px;
+    }
+    
+    @media (min-width: 1600px) {
+      width: 450px;
     }
   }
 
@@ -78,6 +96,15 @@
     &:hover {
       background: rgba(var(--primary-color-rgb, 75, 0, 130), 0.1);
       color: var(--primary-color);
+    }
+  }
+
+  &.responsive {
+    .login-content {
+      @media (min-width: 1200px) {
+        max-width: 90%;
+        margin: 0 auto;
+      }
     }
   }
 }
@@ -332,5 +359,152 @@ form {
 
   .login-header h2 {
     font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .login-content {
+    padding: 0 1rem;
+  }
+  
+  .login-header {
+    margin-bottom: 2.5rem;
+    
+    h2 {
+      font-size: 2rem;
+    }
+    
+    p {
+      font-size: 1.05rem;
+    }
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+    
+    label {
+      font-size: 1rem;
+    }
+  }
+  
+  .input-with-icon input {
+    padding: 0.875rem 1rem 0.875rem 2.75rem;
+    font-size: 1.05rem;
+  }
+  
+  .login-button {
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+}
+
+// Dashboard sidebar styles
+.dashboard-sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 2rem;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(var(--text-rgb), 0.1);
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(var(--primary-color-rgb), 0.3);
+  }
+
+  .user-info {
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+  }
+}
+
+.dashboard-nav {
+  flex: 1;
+  margin-bottom: 2rem;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: 0.5rem;
+
+      a {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s ease;
+        font-weight: 500;
+
+        &:hover {
+          background-color: rgba(var(--primary-color-rgb), 0.1);
+          color: var(--primary-color);
+          transform: translateX(5px);
+        }
+
+        svg {
+          margin-right: 0.75rem;
+          font-size: 1.1rem;
+          width: 20px;
+        }
+      }
+    }
+  }
+}
+
+.logout-button {
+  padding: 0.875rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  background-color: rgba(var(--text-rgb), 0.05);
+  color: var(--text);
+  margin-top: auto;
+  
+  &:hover {
+    background-color: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+  }
+
+  svg {
+    transform: rotate(180deg);
   }
 } 

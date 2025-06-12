@@ -1,0 +1,435 @@
+@import '../../../styles/variables';
+
+// Main container styling
+.signup-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f7fa;
+  
+  // Hide vertical navigation
+  :global(.vertical-nav) {
+    display: none !important;
+  }
+}
+
+// Header styling
+.brand-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #1f2937;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  
+  .brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+    
+    .brand-name {
+      color: #fff;
+    }
+    
+    .brand-highlight {
+      color: #E53935;
+    }
+  }
+  
+  .nav-links {
+    .home-link {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #E53935;
+      }
+    }
+  }
+}
+
+// Signup container
+.signup-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+// Progress steps styling
+.progress-steps {
+  display: flex;
+  width: 100%;
+  max-width: 800px;
+  position: relative;
+  margin-bottom: 3rem;
+  justify-content: center;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 25px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #ddd;
+    z-index: 0;
+  }
+  
+  .progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    padding: 0 2rem;
+    
+    .step-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #fff;
+      border: 2px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #777;
+      font-size: 1.2rem;
+    }
+    
+    .step-label {
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    &.active {
+      .step-circle {
+        background-color: #E53935;
+        border-color: #E53935;
+        color: white;
+      }
+      
+      .step-label {
+        color: #E53935;
+        font-weight: bold;
+      }
+    }
+    
+    &.completed {
+      .step-circle {
+        background-color: #4CAF50;
+        border-color: #4CAF50;
+        color: white;
+      }
+      
+      .step-label {
+        color: #4CAF50;
+      }
+    }
+  }
+}
+
+// Signup card styling
+.signup-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 550px;
+  text-align: center;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #E53935;
+    border-radius: 8px 8px 0 0;
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #E53935;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Form styling for all steps
+.form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    
+    &:focus {
+      border-color: #E53935;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.1);
+    }
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+}
+
+// Button styling
+.next-button, .verify-button, .login-button {
+  width: 100%;
+  background-color: #E53935;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: darken(#E53935, 5%);
+  }
+  
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.back-button {
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #f5f5f5;
+    border-color: #ccc;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  
+  .back-button, .next-button, .verify-button {
+    flex: 1;
+  }
+}
+
+// Credentials step styling
+.credentials-container {
+  width: 100%;
+}
+
+// Information step styling
+.information-container {
+  width: 100%;
+}
+
+// Verification step styling
+.verification-container {
+  width: 100%;
+  
+  .email-icon {
+    margin: 1.5rem auto;
+    width: 60px;
+    height: 60px;
+  }
+  
+  .verification-text {
+    color: #666;
+    margin-bottom: 2rem;
+  }
+  
+  .error-message {
+    color: #E53935;
+    background-color: rgba(229, 57, 53, 0.1);
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    border-left: 3px solid #E53935;
+  }
+  
+  .verification-inputs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    
+    input {
+      width: 45px;
+      height: 55px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 0;
+      
+      &:focus {
+        border-color: #E53935;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.1);
+      }
+    }
+  }
+  
+  .resend-code {
+    margin-top: 1.5rem;
+    
+    .resend-link {
+      background: none;
+      border: none;
+      color: #E53935;
+      font-size: 0.9rem;
+      cursor: pointer;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Login prompt styling
+.login-prompt {
+  margin-top: 1.5rem;
+  color: #666;
+  font-size: 0.95rem;
+  
+  .login-link {
+    color: #E53935;
+    text-decoration: none;
+    font-weight: 500;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Completion step styling
+.completion-container {
+  width: 100%;
+  
+  h2 {
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: #666;
+    margin-bottom: 2rem;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .brand-header {
+    padding: 1rem;
+  }
+  
+  .signup-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .progress-steps {
+    .progress-step {
+      padding: 0 1rem;
+      
+      .step-label {
+        font-size: 0.8rem;
+      }
+      
+      .step-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+    }
+  }
+  
+  .signup-card {
+    padding: 1.5rem;
+    
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  .verification-container {
+    .verification-inputs {
+      input {
+        width: 40px;
+        height: 50px;
+        font-size: 1.3rem;
+      }
+    }
+  }
+}
+
+// Override for the vertical navigation visible in the screenshot
+nav.main-nav {
+  display: none !important;
+}
+
+// Hide any external navigation components
+body {
+  > nav,
+  > header:not(.signup-wrapper .brand-header) {
+    display: none !important;
+  }
+}
+
+// Override the duplicate progress bar
+body > div:not(.signup-wrapper) .progress-container,
+body > div > .credentials,
+body > div > .information,
+body > div > .verification,
+body > div > .completed {
+  display: none !important;
+}
+
+// Global overrides for external UI elements that should be hidden
+.vertical-progress,
+.sidebar-nav,
+.external-header,
+div[class*="sidebar"],
+div[class*="navigation"],
+div[class*="header"]:not(.signup-wrapper .brand-header) {
+  display: none !important;
+} 

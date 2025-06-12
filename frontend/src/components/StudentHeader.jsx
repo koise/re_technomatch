@@ -35,109 +35,8 @@ import {
   FaCoins,
   FaSun
 } from 'react-icons/fa';
+import { useSettings, useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme, useSettings } from '../contexts/ThemeContext';
-
-// Enhanced Cookie utility functions
-const setCookie = (name, value, days = 365) => {
-  try {
-    const expires = new Date();
-    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-    const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
-    document.cookie = `${name}=${encodeURIComponent(stringValue)};expires=${expires.toUTCString()};path=/;samesite=strict`;
-    return true;
-  } catch (error) {
-    console.error('Error setting cookie:', error);
-    return false;
-  }
-};
-
-const getCookie = (name) => {
-  try {
-    const nameEQ = `${name}=`;
-    const ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) === 0) {
-        const rawValue = c.substring(nameEQ.length, c.length);
-        const value = decodeURIComponent(rawValue);
-        // Try to parse as JSON if it looks like a JSON string
-        if ((value.startsWith('{') && value.endsWith('}')) || 
-            (value.startsWith('[') && value.endsWith(']'))) {
-          try {
-            return JSON.parse(value);
-          } catch (e) {
-            return value;
-          }
-        }
-        return value;
-      }
-    }
-    return null;
-  } catch (error) {
-    console.error('Error getting cookie:', error);
-    return null;
-  }
-};
-
-const deleteCookie = (name) => {
-  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-};
-
-// User settings management
-const defaultSettings = {
-  theme: 'dark',
-  font: 'sans-serif',
-  onlineStatus: true,
-  notifications: true,
-  soundEffects: true,
-  animations: true,
-  language: 'en',
-  colorAccent: 'red', // Default accent color
-  sessionTimeout: 60 // in minutes
-};
-
-const getUserSettings = () => {
-  const savedSettings = getCookie('user_settings');
-  return savedSettings ? { ...defaultSettings, ...savedSettings } : defaultSettings;
-};
-
-const saveUserSettings = (settings) => {
-  const result = setCookie('user_settings', { ...getUserSettings(), ...settings });
-  if (!result) {
-    console.error('Failed to save user settings:', settings);
-  }
-  return result;
-};
-
-// Update the applyAllSettings function to remove the accent color part
-const applyAllSettings = (settings) => {
-  // Apply theme
-  const isDark = settings.theme === 'dark';
-  document.body.setAttribute('data-theme', settings.theme);
-  if (isDark) {
-    document.documentElement.classList.add('dark');
-    document.documentElement.classList.remove('light');
-    document.body.classList.add('dark-mode');
-    document.body.classList.remove('light-mode');
-  } else {
-    document.documentElement.classList.add('light');
-    document.documentElement.classList.remove('dark');
-    document.body.classList.add('light-mode');
-    document.body.classList.remove('dark-mode');
-  }
-  
-  // Apply font
-  document.body.style.fontFamily = settings.font;
-  
-  // Apply animations setting
-  if (!settings.animations) {
-    document.body.classList.add('disable-animations');
-  } else {
-    document.body.classList.remove('disable-animations');
-  }
-};
 
 const StudentHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -147,21 +46,17 @@ const StudentHeader = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [friendSidebarOpen, setFriendSidebarOpen] = useState(false);
   
-  // Use ThemeContext instead of local state
+  // Use ThemeContext and SettingsContext
   const { theme, toggleTheme } = useTheme();
   const { settings, updateSetting, resetSettings: resetContextSettings } = useSettings();
   
-  // Initialize settings from cookies or defaults
-  const savedSettings = getUserSettings();
-  
-  const [font, setFont] = useState(savedSettings.font);
-  const [isOnline, setIsOnline] = useState(savedSettings.onlineStatus);
-  const [soundEffects, setSoundEffects] = useState(savedSettings.soundEffects);
-  const [showAnimations, setShowAnimations] = useState(savedSettings.animations);
-  const [colorAccent, setColorAccent] = useState(savedSettings.colorAccent);
-  
-  // Keep darkMode state in sync with theme
+  // Setting states synced with context
   const [darkMode, setDarkMode] = useState(theme === 'dark');
+  const [font, setFont] = useState(settings?.font || 'sans-serif');
+  const [isOnline, setIsOnline] = useState(settings?.onlineStatus !== undefined ? settings.onlineStatus : true);
+  const [soundEffects, setSoundEffects] = useState(settings?.soundEffects !== undefined ? settings.soundEffects : true);
+  const [showAnimations, setShowAnimations] = useState(settings?.animations !== undefined ? settings.animations : true);
+  const [colorAccent, setColorAccent] = useState(settings?.colorAccent || 'red');
 
   // Refs for dropdown elements
   const playDropdownRef = useRef(null);
@@ -169,10 +64,21 @@ const StudentHeader = () => {
   const settingsDropdownRef = useRef(null);
   const profileDropdownRef = useRef(null);
   
-  // Apply theme changes to document
+  // Keep darkMode state in sync with theme
   useEffect(() => {
     setDarkMode(theme === 'dark');
   }, [theme]);
+  
+  // Keep local state in sync with settings context
+  useEffect(() => {
+    if (settings) {
+      setFont(settings.font || 'sans-serif');
+      setIsOnline(settings.onlineStatus !== undefined ? settings.onlineStatus : true);
+      setSoundEffects(settings.soundEffects !== undefined ? settings.soundEffects : true);
+      setShowAnimations(settings.animations !== undefined ? settings.animations : true);
+      setColorAccent(settings.colorAccent || 'red');
+    }
+  }, [settings]);
   
   // Get user data from auth context or use mock data
   const authContext = useAuth();
@@ -248,74 +154,63 @@ const StudentHeader = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   
-  // Initialize settings
-  useEffect(() => {
-    // Get saved settings and apply them
-    const settings = getUserSettings();
-    
-    // Update all state values
-    setFont(settings.font);
-    setIsOnline(settings.onlineStatus);
-    setSoundEffects(settings.soundEffects);
-    setShowAnimations(settings.animations);
-    setColorAccent(settings.colorAccent);
-    
-    // Apply all settings at once
-    applyAllSettings(settings);
-    
-    // Log success
-    console.log('Settings initialized from cookies:', settings);
-  }, []);
-  
-  useEffect(() => {
-    document.body.style.fontFamily = font;
-    saveUserSettings({ font });
-  }, [font]);
-  
-  useEffect(() => {
-    saveUserSettings({ onlineStatus: isOnline });
-  }, [isOnline]);
-
-  useEffect(() => {
-    saveUserSettings({ soundEffects });
-  }, [soundEffects]);
-
-  useEffect(() => {
-    saveUserSettings({ animations: showAnimations });
-  }, [showAnimations]);
-
-  // Font change handler
+  // Font change handler using context
   const handleFontChange = (newFont) => {
     setFont(newFont);
-    saveUserSettings({ font: newFont });
+    updateSetting('font', newFont);
   };
   
-  // Toggle online status
+  // Toggle online status using context
   const toggleOnlineStatus = () => {
     const newStatus = !isOnline;
     setIsOnline(newStatus);
-    saveUserSettings({ onlineStatus: newStatus });
+    updateSetting('onlineStatus', newStatus);
   };
 
-  // Toggle sound effects
+  // Toggle sound effects using context
   const toggleSoundEffects = () => {
     const newValue = !soundEffects;
     setSoundEffects(newValue);
-    saveUserSettings({ soundEffects: newValue });
+    updateSetting('soundEffects', newValue);
   };
 
-  // Toggle animations
+  // Toggle animations using context
   const toggleAnimations = () => {
     const newValue = !showAnimations;
     setShowAnimations(newValue);
-    saveUserSettings({ animations: newValue });
+    updateSetting('animations', newValue);
   };
   
-  // Simplify the changeColorAccent function since we're removing the feature
+  // Change color accent using context
   const changeColorAccent = (color) => {
-    // Still save the preference but don't apply it visually
     setColorAccent(color);
-    saveUserSettings({ colorAccent: color });
+    updateSetting('colorAccent', color);
+  };
+  
+  // Reset settings using context
+  const resetSettings = () => {
+    resetContextSettings();
+    
+    // Show a reset notification
+    const notification = document.createElement('div');
+    notification.className = 'settings-notification';
+    notification.innerHTML = `
+      <div class="notification-content">
+        <i class="fas fa-undo notification-icon"></i>
+        <span>Settings Reset to Defaults</span>
+      </div>
+    `;
+    document.body.appendChild(notification);
+    
+    // Remove the notification after animation completes
+    setTimeout(() => {
+      notification.classList.add('fade-out');
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          document.body.removeChild(notification);
+        }
+      }, 500);
+    }, 1500);
   };
   
   // Close all dropdowns
@@ -362,42 +257,6 @@ const StudentHeader = () => {
   
   // Count unread notifications
   const unreadNotifications = 3;
-  
-  const resetSettings = () => {
-    // Reset all settings using context
-    resetContextSettings();
-    
-    // Update local state to match reset settings
-    setFont(defaultSettings.font);
-    setIsOnline(defaultSettings.onlineStatus);
-    setSoundEffects(defaultSettings.soundEffects);
-    setShowAnimations(defaultSettings.animations);
-    setColorAccent(defaultSettings.colorAccent);
-    
-    // Clear the cookie
-    deleteCookie('user_settings');
-    
-    // Show a reset notification
-    const notification = document.createElement('div');
-    notification.className = 'settings-notification';
-    notification.innerHTML = `
-      <div class="notification-content">
-        <i class="fas fa-undo notification-icon"></i>
-        <span>Settings Reset to Defaults</span>
-      </div>
-    `;
-    document.body.appendChild(notification);
-    
-    // Remove the notification after animation completes
-    setTimeout(() => {
-      notification.classList.add('fade-out');
-      setTimeout(() => {
-        if (document.body.contains(notification)) {
-          document.body.removeChild(notification);
-        }
-      }, 500);
-    }, 1500);
-  };
   
   return (
     <div className={`student-header ${theme === 'dark' ? 'dark' : 'light'}`}>
@@ -902,7 +761,7 @@ const StudentHeader = () => {
       </header>
       
       {/* Friends Sidebar */}
-      {friendSidebarOpen && <FriendsSidebar onClose={() => setFriendSidebarOpen(false)} theme={theme} />}
+      {friendSidebarOpen && <FriendsSidebar onClose={() => setFriendSidebarOpen(false)} />}
       
       {/* Overlay to close dropdowns when clicking outside */}
       {(playDropdownOpen || notificationsOpen || settingsOpen || profileOpen) && (

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import Footer from '../components/Footer';
-import LoginSidebar from '../components/LoginSidebar';
-import GuestNavBar from '../components/GuestNavBar';
+import { useTheme } from '../../../contexts/ThemeContext.jsx';
+import { useAuth } from '../../../contexts/AuthContext.jsx';
+// GuestNavBar now comes from the layout
+// import GuestNavBar from '../components/GuestNavBar';
+import Footer from '../../../components/Footer';
+import LoginSidebar from '../../../components/LoginSidebar';
 import axios from 'axios'; // Import axios 
 import { motion } from 'framer-motion'; // Import motion from framer-motion
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -1602,24 +1603,11 @@ const Home = () => {
       
       {renderSidebar()}
       
-      <GuestNavBar 
-        onLoginClick={handleDashboardNavigation}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1050,
-          width: '100%'
-        }}
-      />
-      
       <motion.main 
         className="main-content"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        style={{ paddingTop: '80px' }} // Add space for fixed header
       >
         <HeroSection onLoginClick={handleDashboardNavigation} />
         <FeaturesSection />

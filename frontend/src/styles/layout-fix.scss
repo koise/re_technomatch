@@ -1,1 +1,0 @@
-/* Fix header height for layout */ .student-header { height: 64px; position: sticky; top: 0; z-index: 100; } .student-header header { height: 64px; position: relative; } .layout-content { height: calc(100vh - 64px) !important; } .game-dashboard { height: 100%; }

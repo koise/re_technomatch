@@ -15,13 +15,11 @@ import {
   faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 import ReactDOM from 'react-dom';
+import { useTheme } from '../contexts/ThemeContext';
 
 const GuestNavBar = ({ onLoginClick }) => {
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem('theme') === 'dark' || 
-    (localStorage.getItem('theme') === null && 
-     window.matchMedia('(prefers-color-scheme: dark)').matches)
-  );
+  const { theme, toggleTheme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   const [authDropdownOpen, setAuthDropdownOpen] = useState(false);
   const avatarRef = useRef(null);
@@ -31,46 +29,18 @@ const GuestNavBar = ({ onLoginClick }) => {
   const [isThemeChanging, setIsThemeChanging] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [darkMode]);
-
-  const toggleDarkMode = () => {
+  const handleToggleTheme = () => {
     // Add animation state
     setIsThemeChanging(true);
     setTimeout(() => setIsThemeChanging(false), 750); // Animation duration
     
-    setDarkMode(!darkMode);
+    toggleTheme();
     
     // Trigger a custom event that other components can listen to
     window.dispatchEvent(new CustomEvent('themechange', { 
-      detail: { theme: !darkMode ? 'dark' : 'light' } 
+      detail: { theme: isDarkMode ? 'light' : 'dark' } 
     }));
   };
-
-  // Listen for system color scheme changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
-    const handleChange = (e) => {
-      // Only change if user hasn't explicitly set a preference
-      if (!localStorage.getItem('theme')) {
-        setDarkMode(e.matches);
-      }
-    };
-    
-    mediaQuery.addEventListener('change', handleChange);
-    
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
 
   const toggleAuthDropdown = () => {
     if (!authDropdownOpen && avatarRef.current) {
@@ -129,12 +99,12 @@ const GuestNavBar = ({ onLoginClick }) => {
           top: `${dropdownPosition.top}px`,
           right: `${dropdownPosition.right}px`,
           zIndex: 1100,
-          backgroundColor: !darkMode ? 'white' : 'var(--bg-secondary)',
+          backgroundColor: !isDarkMode ? 'white' : 'var(--bg-secondary)',
           borderRadius: '12px',
-          boxShadow: !darkMode 
+          boxShadow: !isDarkMode 
             ? '0 10px 25px rgba(0, 0, 0, 0.1), 0 2px 10px rgba(0, 0, 0, 0.05)' 
             : '0 4px 12px rgba(0, 0, 0, 0.3)',
-          border: !darkMode 
+          border: !isDarkMode 
             ? '1px solid rgba(230, 230, 230, 1)' 
             : '1px solid var(--border)',
           minWidth: '220px',
@@ -157,12 +127,12 @@ const GuestNavBar = ({ onLoginClick }) => {
           right: '14px',
           width: '12px',
           height: '12px',
-          backgroundColor: !darkMode ? 'white' : 'var(--bg-secondary)',
+          backgroundColor: !isDarkMode ? 'white' : 'var(--bg-secondary)',
           transform: 'rotate(45deg)',
-          borderLeft: !darkMode 
+          borderLeft: !isDarkMode 
             ? '1px solid rgba(230, 230, 230, 1)' 
             : '1px solid var(--border)',
-          borderTop: !darkMode 
+          borderTop: !isDarkMode 
             ? '1px solid rgba(230, 230, 230, 1)' 
             : '1px solid var(--border)',
           zIndex: -1
@@ -170,7 +140,7 @@ const GuestNavBar = ({ onLoginClick }) => {
         
         <div style={{
           padding: '15px 15px 10px',
-          borderBottom: !darkMode 
+          borderBottom: !isDarkMode 
             ? '1px solid rgba(230, 230, 230, 1)' 
             : '1px solid var(--border)',
           textAlign: 'center'
@@ -179,12 +149,12 @@ const GuestNavBar = ({ onLoginClick }) => {
             fontSize: '0.9rem', 
             margin: 0, 
             marginBottom: '5px',
-            color: !darkMode ? '#333' : 'var(--text)'
+            color: !isDarkMode ? '#333' : 'var(--text)'
           }}>Welcome to TechnoMatch</h3>
           <p style={{ 
             fontSize: '0.75rem', 
             margin: 0,
-            color: !darkMode ? '#666' : 'var(--text-muted)'
+            color: !isDarkMode ? '#666' : 'var(--text-muted)'
           }}>Sign in to start your coding journey</p>
         </div>
         
@@ -198,10 +168,10 @@ const GuestNavBar = ({ onLoginClick }) => {
             alignItems: 'center',
             gap: '8px',
             padding: '12px 16px',
-            color: !darkMode ? '#555' : 'var(--text)',
+            color: !isDarkMode ? '#555' : 'var(--text)',
             textDecoration: 'none',
             transition: 'all 0.2s ease',
-            borderBottom: !darkMode 
+            borderBottom: !isDarkMode 
               ? '1px solid rgba(240, 240, 240, 1)' 
               : '1px solid var(--border)',
             width: '100%',
@@ -213,7 +183,7 @@ const GuestNavBar = ({ onLoginClick }) => {
             fontFamily: 'inherit'
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = !darkMode 
+            e.currentTarget.style.backgroundColor = !isDarkMode 
               ? 'rgba(245, 245, 245, 1)' 
               : 'rgba(var(--primary-color-rgb), 0.1)';
           }}
@@ -241,21 +211,21 @@ const GuestNavBar = ({ onLoginClick }) => {
             borderRadius: '8px',
             textAlign: 'center',
             transition: 'all 0.3s ease',
-            boxShadow: !darkMode 
+            boxShadow: !isDarkMode 
               ? '0 4px 12px rgba(var(--primary-color-rgb), 0.3)' 
               : 'none'
           }}
           onMouseOver={(e) => {
             e.currentTarget.style.filter = 'brightness(1.1)';
             e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = !darkMode 
+            e.currentTarget.style.boxShadow = !isDarkMode 
               ? '0 6px 15px rgba(var(--primary-color-rgb), 0.4)' 
               : '0 4px 12px rgba(0, 0, 0, 0.15)';
           }}
           onMouseOut={(e) => {
             e.currentTarget.style.filter = 'none';
             e.currentTarget.style.transform = 'none';
-            e.currentTarget.style.boxShadow = !darkMode 
+            e.currentTarget.style.boxShadow = !isDarkMode 
               ? '0 4px 12px rgba(var(--primary-color-rgb), 0.3)' 
               : 'none';
           }}
@@ -270,33 +240,39 @@ const GuestNavBar = ({ onLoginClick }) => {
 
   return (
     <header className="site-header theme-transition" style={{
-      backgroundColor: !darkMode ? 'white' : 'var(--bg-secondary)',
-      boxShadow: !darkMode ? '0 4px 20px rgba(0, 0, 0, 0.05)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
-      borderBottom: !darkMode ? '1px solid rgba(230, 230, 230, 1)' : '1px solid var(--border)'
+      backgroundColor: !isDarkMode ? 'white' : 'var(--bg-secondary)',
+      boxShadow: !isDarkMode ? '0 4px 20px rgba(0, 0, 0, 0.05)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+      borderBottom: !isDarkMode ? '1px solid rgba(230, 230, 230, 1)' : '1px solid var(--border)',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1000,
+      width: '100%'
     }}>
       <div className="header-bg-elements">
         <div className="bg-element" style={{ 
-          opacity: !darkMode ? 0.03 : 0.05 
+          opacity: !isDarkMode ? 0.03 : 0.05 
         }}></div>
         <div className="bg-element" style={{ 
-          opacity: !darkMode ? 0.03 : 0.05 
+          opacity: !isDarkMode ? 0.03 : 0.05 
         }}></div>
         <div className="bg-element" style={{ 
-          opacity: !darkMode ? 0.03 : 0.05 
+          opacity: !isDarkMode ? 0.03 : 0.05 
         }}></div>
       </div>
       <div className="container header-container">
         <div className="logo">
           <Link to="/">
             <div className="logo-icon theme-transition" style={{
-              background: !darkMode ? 'rgba(var(--primary-color-rgb), 0.08)' : 'rgba(var(--primary-color-rgb), 0.1)',
-              boxShadow: !darkMode ? '0 2px 10px rgba(var(--primary-color-rgb), 0.2)' : '0 0 10px rgba(var(--primary-color-rgb), 0.5)'
+              background: !isDarkMode ? 'rgba(var(--primary-color-rgb), 0.08)' : 'rgba(var(--primary-color-rgb), 0.1)',
+              boxShadow: !isDarkMode ? '0 2px 10px rgba(var(--primary-color-rgb), 0.2)' : '0 0 10px rgba(var(--primary-color-rgb), 0.5)'
             }}>
               <FontAwesomeIcon icon={faCode} />
             </div>
             <div className="logo-text">
               <span className="logo-text-part theme-transition" style={{
-                color: !darkMode ? '#333' : 'var(--text)'
+                color: !isDarkMode ? '#333' : 'var(--text)'
               }}>Techno</span>
               <span className="logo-text-accent">Match</span>
             </div>
@@ -305,8 +281,8 @@ const GuestNavBar = ({ onLoginClick }) => {
         
         <div className="nav-links">
           <a href="#features" className="nav-link theme-transition" style={{
-            color: !darkMode ? '#555' : 'var(--text)',
-            fontWeight: !darkMode ? '500' : '600'
+            color: !isDarkMode ? '#555' : 'var(--text)',
+            fontWeight: !isDarkMode ? '500' : '600'
           }}>
             <FontAwesomeIcon icon={faGamepad} className="nav-icon" style={{
               color: 'var(--primary-color)'
@@ -314,8 +290,8 @@ const GuestNavBar = ({ onLoginClick }) => {
             <span>Features</span>
           </a>
           <a href="#battle-modes" className="nav-link theme-transition" style={{
-            color: !darkMode ? '#555' : 'var(--text)',
-            fontWeight: !darkMode ? '500' : '600'
+            color: !isDarkMode ? '#555' : 'var(--text)',
+            fontWeight: !isDarkMode ? '500' : '600'
           }}>
             <FontAwesomeIcon icon={faTrophy} className="nav-icon" style={{
               color: 'var(--primary-color)'
@@ -323,8 +299,8 @@ const GuestNavBar = ({ onLoginClick }) => {
             <span>Battles</span>
           </a>
           <a href="#leaderboard" className="nav-link theme-transition" style={{
-            color: !darkMode ? '#555' : 'var(--text)',
-            fontWeight: !darkMode ? '500' : '600'
+            color: !isDarkMode ? '#555' : 'var(--text)',
+            fontWeight: !isDarkMode ? '500' : '600'
           }}>
             <FontAwesomeIcon icon={faRankingStar} className="nav-icon" style={{
               color: 'var(--primary-color)'
@@ -335,28 +311,28 @@ const GuestNavBar = ({ onLoginClick }) => {
         
         <div className="header-actions">
           <button 
-            className={`theme-toggle ${darkMode ? 'dark-mode' : 'light-mode'} ${isThemeChanging ? 'theme-changing' : ''}`} 
-            onClick={toggleDarkMode}
-            aria-label={`Switch to ${darkMode ? 'light' : 'dark'} mode`}
-            aria-pressed={darkMode}
+            className={`theme-toggle ${isDarkMode ? 'dark-mode' : 'light-mode'} ${isThemeChanging ? 'theme-changing' : ''}`} 
+            onClick={handleToggleTheme}
+            aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+            aria-pressed={isDarkMode}
             style={{
-              border: !darkMode ? '1px solid rgba(0, 0, 0, 0.05)' : 'none',
+              border: !isDarkMode ? '1px solid rgba(0, 0, 0, 0.05)' : 'none',
               borderRadius: '30px',
               padding: '2px'
             }}
           >
             <div className="toggle-track theme-transition" style={{
-              background: !darkMode ? 'rgba(136, 186, 252, 0.25)' : '#2d3748'
+              background: !isDarkMode ? 'rgba(136, 186, 252, 0.25)' : '#2d3748'
             }}>
               <FontAwesomeIcon icon={faSun} className="light-icon" aria-hidden="true" style={{
-                color: !darkMode ? '#ff9d00' : '#f6e05e'
+                color: !isDarkMode ? '#ff9d00' : '#f6e05e'
               }} />
               <FontAwesomeIcon icon={faMoon} className="dark-icon" aria-hidden="true" style={{
-                color: !darkMode ? '#a0aec0' : '#a0aec0'
+                color: !isDarkMode ? '#a0aec0' : '#a0aec0'
               }} />
               <div className="toggle-thumb theme-transition"></div>
             </div>
-            <span className="sr-only">{darkMode ? 'Switch to light mode' : 'Switch to dark mode'}</span>
+            <span className="sr-only">{isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}</span>
           </button>
           
           <div className="auth-dropdown">
@@ -368,8 +344,8 @@ const GuestNavBar = ({ onLoginClick }) => {
               aria-label="User menu"
             >
               <div className="user-avatar theme-transition" style={{
-                background: !darkMode ? 'rgba(var(--primary-color-rgb), 0.08)' : 'rgba(var(--primary-color-rgb), 0.1)',
-                border: !darkMode ? '2px solid rgba(var(--primary-color-rgb), 0.2)' : '2px solid transparent'
+                background: !isDarkMode ? 'rgba(var(--primary-color-rgb), 0.08)' : 'rgba(var(--primary-color-rgb), 0.1)',
+                border: !isDarkMode ? '2px solid rgba(var(--primary-color-rgb), 0.2)' : '2px solid transparent'
               }}>
                 <FontAwesomeIcon icon={faUser} />
               </div>

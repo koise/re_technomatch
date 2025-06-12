@@ -4,16 +4,20 @@ import Cookies from "js-cookie"; // Import js-cookie
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState(localStorage.getItem("token") || null);
-    const [username, setUsername] = useState(
-        localStorage.getItem("username") || ""
-    );
-    const [userRole, setUserRole] = useState(
-        localStorage.getItem("role") || "Guest"
-    );
-    const [userId, setUserId] = useState(
-        localStorage.getItem("user_id") || null
-    );
+    // Get values from cookies first, then fallback to localStorage
+    const getStoredValue = (cookieName, localStorageName) => {
+        const cookieValue = Cookies.get(cookieName);
+        if (cookieValue !== undefined) return cookieValue;
+        return localStorage.getItem(localStorageName);
+    };
+
+    const [token, setToken] = useState(getStoredValue("token", "token") || null);
+    const [username, setUsername] = useState(getStoredValue("username", "username") || "");
+    const [userRole, setUserRole] = useState(getStoredValue("role", "role") || "guest");
+    const [userId, setUserId] = useState(getStoredValue("user_id", "user_id") || null);
+    
+    // Computed property to check if user is authenticated
+    const isAuthenticated = !!token && userRole !== "guest";
     
     // Get theme from localStorage first, then cookie, then system preference
     const getInitialTheme = () => {
@@ -46,9 +50,9 @@ export const AuthProvider = ({ children }) => {
             console.log("Using mock auth validation instead of API call");
             
             // Simulate successful validation with stored data
-            const storedRole = localStorage.getItem("role");
-            const storedUsername = localStorage.getItem("username");
-            const storedUserId = localStorage.getItem("user_id");
+            const storedRole = getStoredValue("role", "role");
+            const storedUsername = getStoredValue("username", "username");
+            const storedUserId = getStoredValue("user_id", "user_id");
             
             if (storedRole && storedUsername) {
                 setUserRole(storedRole);
@@ -120,10 +124,18 @@ export const AuthProvider = ({ children }) => {
         setToken(newToken);
         setUsername(username);
         setUserRole(role);
+        
+        // Store in both cookies (primary) and localStorage (backup)
+        Cookies.set("token", newToken, { expires: 7 });
+        Cookies.set("username", username, { expires: 7 });
+        Cookies.set("role", role, { expires: 7 });
+        Cookies.set("user_id", "1", { expires: 7 }); // Default mock user ID
+        
         localStorage.setItem("username", username);
         localStorage.setItem("token", newToken);
         localStorage.setItem("role", role);
         localStorage.setItem("user_id", "1"); // Default mock user ID
+        
         console.log(`AuthContext: User logged in successfully - Role set to: ${role}`);
     };
 
@@ -131,14 +143,20 @@ export const AuthProvider = ({ children }) => {
         // DISABLED API CALL - No need to call the server
         console.log("Logging out user (API call disabled)");
         
-        // Just clear local data
-        setToken(null);
-        setUsername("");
-        setUserRole("Guest");
+        // Clear both cookies and localStorage
+        Cookies.remove("token");
+        Cookies.remove("username");
+        Cookies.remove("role");
+        Cookies.remove("user_id");
+        
         localStorage.removeItem("username");
         localStorage.removeItem("token");
         localStorage.removeItem("role");
         localStorage.removeItem("user_id");
+        
+        setToken(null);
+        setUsername("");
+        setUserRole("guest");
     };
 
     // Enhanced theme update function
@@ -146,6 +164,7 @@ export const AuthProvider = ({ children }) => {
         if (newTheme === 'system') {
             // If system preference is selected, remove localStorage entry and use system preference
             localStorage.removeItem("theme");
+            Cookies.remove("theme");
             const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
             setTheme(isDarkMode ? 'dark' : 'light');
         } else {
@@ -164,6 +183,7 @@ export const AuthProvider = ({ children }) => {
                 token,
                 username,
                 userRole,
+                isAuthenticated,
                 login,
                 logout: handleLogout,
                 userId,

@@ -18,27 +18,26 @@ import {
   FaStar,
   FaTrophy
 } from 'react-icons/fa';
-import { useSettings } from '../contexts/ThemeContext'; // Import the settings context
-import { useToast } from '../contexts/ToastContext'; // Import the toast hook
+import { useSettings, useTheme } from '../contexts/ThemeContext'; // Import both hooks
+import { useToast } from '../contexts/ToastContext';
 import './FriendsSidebar.scss';
 
-const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
+const FriendsSidebar = ({ onClose, isCompact = false }) => {
   const [activeTab, setActiveTab] = useState('online');
   const [searchQuery, setSearchQuery] = useState('');
   const [mounted, setMounted] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null);
   const menuRef = useRef(null);
   
-  // Get settings from context
-  const settingsContext = useSettings ? useSettings() : null;
+  // Get settings and theme from context
+  const { settings } = useSettings();
+  const { theme } = useTheme();
   
   // Get toast functions
-  const toast = useToast ? useToast() : null;
+  const toast = useToast();
   
-  // Use settings from context if available, otherwise use props
-  const effectiveTheme = settingsContext?.settings?.theme || theme;
-  const showAnimations = settingsContext?.settings?.animations !== undefined ?
-    settingsContext.settings.animations : true;
+  // Use settings from context
+  const showAnimations = settings?.animations !== undefined ? settings.animations : true;
   
   // Set mounted state after initial render for animations
   useEffect(() => {
@@ -265,7 +264,7 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
   };
 
   return (
-    <div className={`friends-sidebar ${effectiveTheme}`}>
+    <div className={`friends-sidebar ${theme}`}>
       <div className="friends-header">
         <h3>
           Friends List
