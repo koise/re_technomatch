@@ -1,5 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaTimes, FaSearch, FaUserPlus, FaCircle, FaEllipsisV, FaUserMinus, FaBan, FaChevronRight, FaUsers, FaUserFriends, FaGamepad, FaCheck } from 'react-icons/fa';
+import { 
+  FaTimes, 
+  FaSearch, 
+  FaUserPlus, 
+  FaCircle, 
+  FaEllipsisV, 
+  FaUserMinus, 
+  FaBan, 
+  FaChevronRight, 
+  FaUsers, 
+  FaUserFriends, 
+  FaGamepad, 
+  FaCheck,
+  FaCrown,
+  FaMedal,
+  FaRegBell,
+  FaStar,
+  FaTrophy
+} from 'react-icons/fa';
 import { useSettings } from '../contexts/ThemeContext'; // Import the settings context
 import { useToast } from '../contexts/ToastContext'; // Import the toast hook
 import './FriendsSidebar.scss';
@@ -41,7 +59,7 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
     };
   }, []);
   
-  // Mock friends data
+  // Mock friends data with gaming stats
   const friends = [
     {
       id: 1,
@@ -49,7 +67,10 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
       avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
       status: 'online',
       game: 'Progressive Mode',
-      lastActive: 'Now'
+      lastActive: 'Now',
+      level: 42,
+      badge: 'Gold',
+      recentAchievement: 'Master Tactician'
     },
     {
       id: 2,
@@ -57,7 +78,10 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
       avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
       status: 'online',
       game: null,
-      lastActive: 'Now'
+      lastActive: 'Now',
+      level: 27,
+      badge: 'Silver',
+      recentAchievement: null
     },
     {
       id: 3,
@@ -65,7 +89,10 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
       avatar: 'https://randomuser.me/api/portraits/women/33.jpg',
       status: 'offline',
       game: null,
-      lastActive: '3h ago'
+      lastActive: '3h ago',
+      level: 19,
+      badge: 'Bronze',
+      recentAchievement: 'Quick Learner'
     },
     {
       id: 4,
@@ -73,7 +100,10 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
       avatar: 'https://randomuser.me/api/portraits/men/76.jpg',
       status: 'online',
       game: 'Competitive Mode',
-      lastActive: 'Now'
+      lastActive: 'Now',
+      level: 56,
+      badge: 'Diamond',
+      recentAchievement: 'Champion'
     },
     {
       id: 5,
@@ -81,7 +111,10 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
       avatar: 'https://randomuser.me/api/portraits/women/85.jpg',
       status: 'offline',
       game: null,
-      lastActive: '2d ago'
+      lastActive: '2d ago',
+      level: 31,
+      badge: 'Silver',
+      recentAchievement: null
     }
   ];
 
@@ -91,13 +124,15 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
       id: 101,
       name: 'Daniel Lewis',
       avatar: 'https://randomuser.me/api/portraits/men/52.jpg',
-      mutualFriends: 3
+      mutualFriends: 3,
+      level: 23
     },
     {
       id: 102,
       name: 'Isabella Martinez',
       avatar: 'https://randomuser.me/api/portraits/women/62.jpg',
-      mutualFriends: 1
+      mutualFriends: 1,
+      level: 15
     }
   ];
 
@@ -203,6 +238,32 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
     // Implement actual navigation here
   };
 
+  // Render badge icon based on badge type
+  const renderBadgeIcon = (badge) => {
+    switch (badge?.toLowerCase()) {
+      case 'gold':
+        return <FaTrophy style={{ color: '#FFD700' }} />;
+      case 'diamond':
+        return <FaCrown style={{ color: '#B9F2FF' }} />;
+      case 'silver':
+        return <FaMedal style={{ color: '#C0C0C0' }} />;
+      case 'bronze':
+        return <FaMedal style={{ color: '#CD7F32' }} />;
+      default:
+        return null;
+    }
+  };
+
+  // Handle game invite
+  const handleGameInvite = (friendId) => {
+    const friend = friends.find(f => f.id === friendId);
+    if (friend && toast) {
+      toast.showInfo(`Game invitation sent to ${friend.name}`);
+    }
+    // Implement actual game invite logic here
+    console.log(`Invite ${friendId} to play`);
+  };
+
   return (
     <div className={`friends-sidebar ${effectiveTheme}`}>
       <div className="friends-header">
@@ -276,7 +337,15 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
                     </div>
                     
                     <div className="friend-info">
-                      <div className="friend-name">{friend.name}</div>
+                      <div className="friend-name">
+                        {friend.name}
+                        {friend.badge && (
+                          <span className="badge-icon" title={`${friend.badge} Badge`}>
+                            {renderBadgeIcon(friend.badge)}
+                          </span>
+                        )}
+                      </div>
+                      
                       <div className="friend-status">
                         {friend.status === 'online' ? (
                           friend.game ? (
@@ -295,12 +364,24 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
                             Last online {friend.lastActive}
                           </span>
                         )}
+                        <span className="level-badge" title="Player Level">Lvl {friend.level}</span>
                       </div>
+                      
+                      {friend.recentAchievement && (
+                        <div className="achievement-tag">
+                          <FaStar className="achievement-icon" />
+                          {friend.recentAchievement}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="friend-actions">
                       {friend.status === 'online' && (
-                        <button className="invite-btn" aria-label={`Invite ${friend.name} to play`}>
+                        <button 
+                          className="invite-btn" 
+                          onClick={() => handleGameInvite(friend.id)}
+                          aria-label={`Invite ${friend.name} to play`}
+                        >
                           <FaGamepad />
                         </button>
                       )}
@@ -357,7 +438,7 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
             <div className="section-title">
               Friend Requests
               <span className="count">{friendRequests.length}</span>
-          </div>
+            </div>
 
             {friendRequests.length > 0 ? (
               <div className="friends-list">
@@ -371,6 +452,7 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
                       <div className="friend-name">{request.name}</div>
                       <div className="mutual-friends">
                         {request.mutualFriends} mutual friend{request.mutualFriends !== 1 ? 's' : ''}
+                        <span className="level-badge" title="Player Level">Lvl {request.level}</span>
                       </div>
                     </div>
                     
@@ -400,7 +482,7 @@ const FriendsSidebar = ({ onClose, theme = 'dark', isCompact = false }) => {
                     <FaChevronRight className="chevron-icon" />
                   </button>
                 </div>
-                </div>
+              </div>
             ) : (
               <div className="empty-state">
                 <FaUserPlus className="empty-icon" />

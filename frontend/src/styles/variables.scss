@@ -514,4 +514,42 @@ $breakpoint-xs: 0;
 $breakpoint-sm: 576px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
-$breakpoint-xl: 1200px; 
+$breakpoint-xl: 1200px;
+
+// StudentHeader specific variables
+// Red-themed color palette
+$header-primary-color: #e53e3e;
+$header-primary-color-rgb: 229, 62, 62;
+$header-secondary-color: #c53030;
+$header-secondary-color-rgb: 197, 48, 48;
+$header-accent-color: #b91c1c;
+$header-accent-color-rgb: 185, 28, 28;
+
+// Game theme colors - red palette
+$header-rookie-color: #fc8181;
+$header-rookie-color-rgb: 252, 129, 129;
+$header-elite-color: #e53e3e;
+$header-elite-color-rgb: 229, 62, 62;
+$header-master-color: #c53030;
+$header-master-color-rgb: 197, 48, 48;
+$header-legendary-color: #FFD700;
+$header-legendary-color-rgb: 255, 215, 0;
+$header-epic-color: #FF9900;
+$header-epic-color-rgb: 255, 153, 0;
+
+// Light/Dark Mode Variables for StudentHeader
+$header-light-bg: #f0f2f5;
+$header-light-bg-secondary: #ffffff;
+$header-light-text: #2c3e50;
+$header-light-text-secondary: #7f8c8d;
+$header-light-border: #ecf0f1;
+$header-light-card-bg: #ffffff;
+$header-light-shadow: rgba(0, 0, 0, 0.08);
+
+$header-dark-bg: #0a0e14;
+$header-dark-bg-secondary: #161b22;
+$header-dark-text: #e6e9ee;
+$header-dark-text-secondary: #a0a8b1;
+$header-dark-border: #2c3e50;
+$header-dark-card-bg: #1a1f29;
+$header-dark-shadow: rgba(0, 0, 0, 0.2); 

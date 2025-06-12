@@ -19,24 +19,24 @@
   --text-secondary: rgba(255, 255, 255, 0.7);
   --text-tertiary: rgba(255, 255, 255, 0.5);
   
-  --accent-primary: #4b69ff;
-  --accent-secondary: #3a7bd5;
-  --accent-tertiary: #00d2ff;
+  --accent-primary: #e53e3e;
+  --accent-secondary: #c53030;
+  --accent-tertiary: #b91c1c;
   --accent-success: #4caf50;
   --accent-warning: #ffa000;
   --accent-danger: #f5576c;
   
   --border-light: rgba(255, 255, 255, 0.1);
-  --border-accent: rgba(75, 105, 255, 0.3);
+  --border-accent: rgba(229, 62, 62, 0.3);
   
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --shadow-accent: 0 0 15px rgba(75, 105, 255, 0.2);
+  --shadow-accent: 0 0 15px rgba(229, 62, 62, 0.2);
   
-  --glow-primary: rgba(75, 105, 255, 0.3);
-  --glow-secondary: rgba(58, 123, 213, 0.3);
-  --glow-tertiary: rgba(0, 210, 255, 0.3);
+  --glow-primary: rgba(229, 62, 62, 0.3);
+  --glow-secondary: rgba(197, 48, 48, 0.3);
+  --glow-tertiary: rgba(185, 28, 28, 0.3);
   --glow-success: rgba(76, 175, 80, 0.3);
   --glow-warning: rgba(255, 160, 0, 0.3);
   --glow-danger: rgba(245, 87, 108, 0.3);
@@ -57,25 +57,25 @@
   --text-tertiary: rgba(25, 30, 40, 0.5);
   
   --border-light: rgba(0, 0, 0, 0.1);
-  --border-accent: rgba(75, 105, 255, 0.3);
+  --border-accent: rgba(229, 62, 62, 0.3);
   
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
-  --shadow-accent: 0 0 15px rgba(75, 105, 255, 0.15);
+  --shadow-accent: 0 0 15px rgba(229, 62, 62, 0.15);
   
   /* Light theme accent colors with adjusted contrast */
-  --accent-primary: #3a57e8;
-  --accent-secondary: #2968c0;
-  --accent-tertiary: #00aeef;
+  --accent-primary: #e53e3e;
+  --accent-secondary: #c53030;
+  --accent-tertiary: #b91c1c;
   --accent-success: #2e9d39;
   --accent-warning: #e89c00;
   --accent-danger: #e84a5f;
   
   /* Light theme glows */
-  --glow-primary: rgba(58, 87, 232, 0.15);
-  --glow-secondary: rgba(41, 104, 192, 0.15);
-  --glow-tertiary: rgba(0, 174, 239, 0.15);
+  --glow-primary: rgba(229, 62, 62, 0.15);
+  --glow-secondary: rgba(197, 48, 48, 0.15);
+  --glow-tertiary: rgba(185, 28, 28, 0.15);
   --glow-success: rgba(46, 157, 57, 0.15);
   --glow-warning: rgba(232, 156, 0, 0.15);
   --glow-danger: rgba(232, 74, 95, 0.15);
